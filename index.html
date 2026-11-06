@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>붕어빵 보내기 · 몸한입</title>
+<meta property="og:title" content="따끈한 붕어빵이 도착했어요 🐟">
+<meta property="og:description" content="열어서 한마디 확인하고, 나도 구워서 보내 보세요">
+<style>
+:root{--bg:#1d1410;--ink:#fff6e5;--gold:#f2a93b;--gold2:#d9801c;--brown:#6b3a1a;--green:#164a34;--cream:#fbf6ea;--red:#ec3424}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body{display:flex;justify-content:center}
+#app{width:100%;max-width:480px;height:100dvh;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#3a2416 0%,#1d1410 70%)}
+.badge{position:absolute;left:14px;top:calc(14px + env(safe-area-inset-top));background:var(--green);color:var(--cream);font-weight:900;font-size:15px;padding:6px 14px;border-radius:20px;z-index:5}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:flex-start;padding:70px 20px 24px;text-align:center}
+.screen.on{display:flex}
+h1{font-size:30px;line-height:1.25;margin:10px 0 6px;font-weight:900}
+h1 em{color:var(--gold);font-style:normal}
+p.sub{margin:0 0 14px;opacity:.8;font-size:15px}
+/* 굽는 장면 */
+.stage{position:relative;width:100%;height:60%;max-height:470px;margin-top:84px}
+.mold{position:absolute;left:50%;top:48%;width:300px;height:210px;transform:translate(-50%,-50%);transition:transform 1s ease}
+.half{position:absolute;left:0;width:100%;height:100px;background:linear-gradient(#8a5128,#5a2f14);border-radius:18px;box-shadow:0 6px 0 #3b1e0c;transition:transform .8s ease}
+.half.top{top:0;transform-origin:50% 100%}
+.half.bot{bottom:0}
+.cav{position:absolute;left:50%;top:50%;width:230px;height:110px;transform:translate(-50%,-50%)}
+.cav svg{width:100%;height:100%;overflow:visible}
+.mold.open .half.top{transform:translateY(-100px) rotate(-8deg)}
+.mold.flip{transform:translate(-50%,-50%) rotate(180deg)}
+.mold.flip .cav{transform:translate(-50%,-50%) rotate(180deg)}
+.batter,.bean,.fish{transition:opacity .6s,transform .6s}
+.batter{opacity:0;transform:scaleY(.3);transform-origin:50% 100%}
+.batter.on{opacity:1;transform:scaleY(1)}
+.bean{opacity:0;transform:translateY(-40px)}
+.bean.on{opacity:1;transform:translateY(0)}
+.steam{position:absolute;left:50%;top:6%;width:200px;height:80px;transform:translateX(-50%);opacity:0}
+.steam i{position:absolute;bottom:0;width:10px;height:50px;border-radius:10px;background:rgba(255,255,255,.35);filter:blur(4px);animation:up 1.6s infinite}
+.steam i:nth-child(1){left:30px}.steam i:nth-child(2){left:90px;animation-delay:.5s}.steam i:nth-child(3){left:150px;animation-delay:1s}
+@keyframes up{0%{transform:translateY(20px);opacity:0}40%{opacity:.8}100%{transform:translateY(-40px);opacity:0}}
+.steam.on{opacity:1}
+.caption{position:absolute;left:0;right:0;bottom:0;font-weight:900;font-size:24px;min-height:34px;color:var(--gold)}
+.slip{position:absolute;left:50%;top:57%;width:86%;transform:translate(-50%,40px) rotate(-1.5deg);background:var(--cream);color:#2a1a0e;border-radius:16px;padding:18px 16px;font-size:24px;font-weight:900;line-height:1.35;opacity:0;transition:all .7s cubic-bezier(.2,1.4,.4,1);box-shadow:0 8px 24px rgba(0,0,0,.45);word-break:keep-all}
+.slip small{display:block;margin-top:8px;font-size:13px;font-weight:700;color:#8a6a4a}
+.slip.on{opacity:1;transform:translate(-50%,-50%) rotate(-1.5deg)}
+.stage.done .mold{opacity:.0;transition:opacity .8s}
+.bigfish{position:absolute;left:50%;top:18%;width:240px;transform:translateX(-50%) scale(.3);opacity:0;transition:all .8s cubic-bezier(.2,1.5,.4,1)}
+.bigfish.on{opacity:1;transform:translateX(-50%) scale(1)}
+/* 버튼 */
+.btn{appearance:none;border:0;border-radius:16px;font:inherit;font-weight:900;font-size:19px;padding:16px 20px;width:100%;max-width:360px;cursor:pointer;margin-top:10px}
+.btn.main{background:var(--gold);color:#2a1606;box-shadow:0 5px 0 var(--gold2)}
+.btn.sub2{background:transparent;color:var(--ink);border:2px solid rgba(255,246,229,.4)}
+.btn:active{transform:translateY(3px)}
+.cta{position:absolute;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;padding:0 20px;opacity:0;pointer-events:none;transition:opacity .6s}
+.cta.on{opacity:1;pointer-events:auto}
+.counter{font-size:14px;opacity:.75;margin-top:10px;min-height:20px}
+.counter b{color:var(--gold)}
+textarea{width:100%;max-width:360px;height:120px;border-radius:16px;border:2px solid var(--gold);background:#2a1a10;color:var(--ink);font:inherit;font-size:22px;font-weight:700;padding:14px;resize:none;outline:none}
+.hint{font-size:13px;opacity:.65;margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:360px;margin-top:12px}
+.chip{background:#3a2416;border:1px solid rgba(255,246,229,.25);color:var(--ink);border-radius:20px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer}
+.linkbox{width:100%;max-width:360px;background:#2a1a10;border-radius:12px;padding:10px 12px;font-size:12px;word-break:break-all;opacity:.8;margin-top:12px}
+.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);background:var(--cream);color:#222;font-weight:800;padding:10px 16px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="badge">몸한입</div>
+
+  <!-- 받는 화면: 굽는 장면 -->
+  <section class="screen" id="sView">
+    <h1 id="vTitle">따끈한 <em>붕어빵</em>이<br>도착했어요</h1>
+    <div class="stage" id="stage">
+      <div class="steam" id="steam"><i></i><i></i><i></i></div>
+      <div class="mold" id="mold">
+        <div class="half top"></div><div class="half bot"></div>
+        <div class="cav"><svg viewBox="0 0 230 110">
+          <path id="cavity" d="M12 55 C30 8 150 6 190 38 L226 14 L216 55 L226 96 L190 72 C150 104 30 102 12 55Z" fill="#2a1408"/>
+          <g class="batter" id="batter"><path d="M18 55 C34 14 150 12 188 40 L222 18 L213 55 L222 92 L188 70 C150 98 34 96 18 55Z" fill="#f4c46b"/></g>
+          <g class="bean" id="bean"><ellipse cx="95" cy="55" rx="34" ry="15" fill="#7b2d26"/><ellipse cx="88" cy="51" rx="9" ry="4" fill="#a1463d"/></g>
+        </svg></div>
+      </div>
+      <svg class="bigfish" id="bigfish" viewBox="0 0 230 110">
+        <path d="M12 55 C30 8 150 6 190 38 L226 14 L216 55 L226 96 L190 72 C150 104 30 102 12 55Z" fill="#d98a25" stroke="#8a4a10" stroke-width="3"/>
+        <path d="M30 50 C50 22 140 20 176 42" stroke="#f5c15a" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+        <g stroke="#8a4a10" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"><path d="M100 30 Q112 55 100 80"/><path d="M122 33 Q134 55 122 77"/><path d="M144 38 Q154 55 144 72"/></g>
+        <circle cx="48" cy="46" r="7" fill="#2a1408"/><circle cx="46" cy="44" r="2.5" fill="#fff"/>
+        <path d="M24 62 Q34 70 44 64" stroke="#8a4a10" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="slip" id="slip"><span id="slipText"></span><small id="slipFrom">붕어빵에서 나온 한마디</small></div>
+      <div class="caption" id="caption"></div>
+    </div>
+    <div class="counter" id="counterView"></div>
+    <div class="cta" id="cta">
+      <button class="btn main" id="btnMine">🐟 나도 구워서 보내기</button>
+      <button class="btn sub2" id="btnReplay">다시 굽는 거 보기</button>
+    </div>
+  </section>
+
+  <!-- 보내는 화면 -->
+  <section class="screen" id="sMake">
+    <h1>한마디 <em>구워서</em><br>보내요</h1>
+    <p class="sub" id="makeSub">붕어빵 속에 넣을 말을 적어 주세요</p>
+    <textarea id="msg" maxlength="40" placeholder="예) 오늘도 고생했어, 따뜻하게 먹어"></textarea>
+    <div class="hint"><span id="len">0</span>/40자 · 서버에 저장되지 않고 링크 안에만 담겨요</div>
+    <div class="chips" id="chips"></div>
+    <button class="btn main" id="btnBake">🔥 굽기</button>
+  </section>
+
+  <!-- 링크 화면 -->
+  <section class="screen" id="sShare">
+    <h1>구웠어요!<br><em>누구에게</em> 보낼까요?</h1>
+    <p class="sub">받는 사람이 열면 붕어빵이 구워져요</p>
+    <button class="btn main" id="btnShare">📤 카톡·인스타로 보내기</button>
+    <button class="btn sub2" id="btnCopy">🔗 링크 복사</button>
+    <button class="btn sub2" id="btnPreview">내 붕어빵 미리보기</button>
+    <div class="linkbox" id="linkbox"></div>
+    <div class="counter" id="counterShare"></div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ===== 테마(시리즈용): 새 테마는 여기에 객체만 추가 =====
+   id: URL의 t= 값, title: 받는 화면 제목, steps: 굽는 단계 자막, sample: 예시 문장, ns: 카운터 이름
+   (걱정 태우기·때밀기·김장 같은 다음 시리즈는 같은 틀에 그림 단계만 바꾸면 된다) */
+const THEMES = {
+  bungeo: {
+    title: '따끈한 <em>붕어빵</em>이<br>도착했어요',
+    steps: ['반죽을 붓고…','팥을 올리고…','뒤집어서…','바삭하게 구워요','다 구워졌어요!'],
+    samples: ['오늘도 고생했어, 따뜻하게 먹어','밥은 먹었어? 나 네 생각났어','춥다, 같이 붕어빵 먹자','너 진짜 잘하고 있어','오늘 하루 수고 많았어'],
+    from: '붕어빵에서 나온 한마디',
+    ns: 'momhanip-bungeo-live'
+  }
+};
+const COUNT_BASE = 'https://abacus.jasoncameron.dev';
+const $ = id => document.getElementById(id);
+const theme = THEMES[new URLSearchParams(location.hash.slice(1)).get('t')] || THEMES.bungeo;
+const themeId = Object.keys(THEMES).find(k => THEMES[k] === theme);
+
+/* 메시지 ↔ 링크 (UTF-8 → base64url) */
+const enc = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const dec = b => { try { b = b.replace(/-/g,'+').replace(/_/g,'/'); while (b.length % 4) b += '='; return new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0))); } catch { return ''; } };
+const makeLink = m => location.origin === 'null' || location.protocol === 'file:'
+  ? location.href.split('#')[0] + '#t=' + themeId + '&m=' + enc(m)
+  : location.origin + location.pathname + '#t=' + themeId + '&m=' + enc(m);
+
+function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); }
+function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('on'); setTimeout(()=>e.classList.remove('on'),1800); }
+
+/* 전국 카운터: 무료 공개 카운터(abacus). 실패하면 조용히 숨김 */
+async function counter(op){
+  try {
+    const r = await fetch(`${COUNT_BASE}/${op}/${theme.ns}/baked`, {mode:'cors'});
+    const j = await r.json(); return typeof j.value === 'number' ? j.value : null;
+  } catch { return null; }
+}
+async function showCount(el){
+  const n = await counter('get');
+  if (n !== null) el.innerHTML = `지금까지 전국에서 구운 붕어빵 <b>${n.toLocaleString('ko-KR')}</b>개`;
+}
+
+/* 굽는 장면 (약 7초) */
+let timers = [];
+const wait = (ms, fn) => timers.push(setTimeout(fn, ms));
+function resetStage(){
+  timers.forEach(clearTimeout); timers = [];
+  ['batter','bean'].forEach(i => $(i).classList.remove('on'));
+  $('mold').className = 'mold'; $('stage').classList.remove('done');
+  ['bigfish','slip','cta','steam'].forEach(i => $(i).classList.remove('on'));
+  $('caption').textContent = '';
+}
+function bake(msg){
+  resetStage();
+  const c = t => $('caption').textContent = t;
+  $('slipText').textContent = msg;
+  $('slipFrom').textContent = theme.from;
+  wait(100,  () => { $('mold').classList.add('open'); c(theme.steps[0]); });
+  wait(700,  () => $('batter').classList.add('on'));
+  wait(1700, () => { c(theme.steps[1]); $('bean').classList.add('on'); });
+  wait(2800, () => { c(theme.steps[2]); $('mold').classList.remove('open'); });
+  wait(3500, () => $('mold').classList.add('flip'));
+  wait(4700, () => { c(theme.steps[3]); $('steam').classList.add('on'); });
+  wait(5700, () => { c(theme.steps[4]); $('stage').classList.add('done'); $('bigfish').classList.add('on'); });
+  wait(6500, () => { c(''); $('bigfish').style.top = '0%'; $('slip').classList.add('on'); });
+  wait(7300, () => $('cta').classList.add('on'));
+}
+
+/* 화면 흐름 */
+function toView(msg){
+  show('sView'); $('vTitle').innerHTML = theme.title;
+  $('bigfish').style.top = '18%';
+  bake(msg); showCount($('counterView'));
+}
+function toMake(){
+  show('sMake'); $('msg').value=''; $('len').textContent='0';
+  const box = $('chips'); box.innerHTML='';
+  theme.samples.forEach(s => { const b=document.createElement('button'); b.className='chip'; b.textContent=s; b.onclick=()=>{ $('msg').value=s; $('len').textContent=s.length; }; box.appendChild(b); });
+}
+let myMsg = '', myLink = '';
+$('msg').addEventListener('input', e => $('len').textContent = e.target.value.length);
+$('btnMine').onclick = toMake;
+$('btnReplay').onclick = () => toView(new URLSearchParams(location.hash.slice(1)).get('m') ? dec(new URLSearchParams(location.hash.slice(1)).get('m')) : myMsg);
+$('btnBake').onclick = async () => {
+  const m = $('msg').value.trim();
+  if (!m) return toast('한마디를 적어 주세요');
+  myMsg = m; myLink = makeLink(m);
+  $('linkbox').textContent = myLink; show('sShare');
+  const n = await counter('hit');
+  if (n !== null) $('counterShare').innerHTML = `오늘도 전국에서 구운 붕어빵 <b>${n.toLocaleString('ko-KR')}</b>개째!`;
+};
+$('btnShare').onclick = async () => {
+  const data = {title:'붕어빵이 도착했어요 🐟', text:'따끈한 붕어빵 보내요. 열어서 한마디 확인해 보세요 🐟', url: myLink};
+  if (navigator.share) { try { await navigator.share(data); } catch {} }
+  else { copy(); }
+};
+$('btnCopy').onclick = copy;
+async function copy(){
+  try { await navigator.clipboard.writeText(myLink); toast('링크를 복사했어요'); }
+  catch { const t=document.createElement('textarea'); t.value=myLink; document.body.appendChild(t); t.select(); try{document.execCommand('copy'); toast('링크를 복사했어요');}catch{toast('링크를 길게 눌러 복사해 주세요');} t.remove(); }
+}
+$('btnPreview').onclick = () => toView(myMsg);
+
+/* 시작: 링크에 메시지가 있으면 바로 굽는 장면, 없으면 만들기 화면 */
+function start(){
+  const m = new URLSearchParams(location.hash.slice(1)).get('m');
+  const msg = m ? dec(m) : '';
+  if (msg) toView(msg); else toMake();
+}
+addEventListener('hashchange', start);
+start();
+</script>
+</body>
+</html>
