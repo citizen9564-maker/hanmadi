@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1026">
+<title>심야 버스 정류장 · 한마디</title>
+<meta name="description" content="막차를 기다리는 사람들이 모이는 심야 버스 정류장. 말없이 같이 앉아 있다 가요.">
+<meta property="og:title" content="심야 버스 정류장">
+<meta property="og:description" content="막차를 기다리며 같이 앉아 있다 가요.">
+<style>
+:root{--ink:#f3efe6;--dim:#9aa3c4;--gold:#ffd27a;--bg:#0b1026}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+body{display:flex;flex-direction:column;align-items:center;overflow:hidden}
+.top{width:100%;max-width:480px;display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 14px 6px}
+.top h1{margin:0;font-size:16px;font-weight:700;letter-spacing:-.2px}
+.top .cnt{font-size:13px;color:var(--dim);background:rgba(255,255,255,.07);padding:5px 10px;border-radius:14px}
+.top .cnt b{color:var(--gold)}
+.notice{width:100%;max-width:480px;text-align:center;font-size:12.5px;color:var(--dim);padding:0 14px 6px}
+.notice.hot{color:var(--gold)}
+.stage{position:relative;width:100%;max-width:480px;aspect-ratio:360/560;flex:0 1 auto;max-height:calc(100dvh - 190px)}
+.stage svg.bg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.av{position:absolute;width:8.6%;transform:translate(-50%,-100%);transition:left .6s,top .6s;pointer-events:none}
+.av svg{width:100%;display:block;overflow:visible}
+.av .me{position:absolute;left:50%;top:-20px;transform:translateX(-50%);font-size:10px;color:var(--gold);white-space:nowrap}
+.bub{position:absolute;left:50%;bottom:112%;transform:translateX(-50%);background:#fff;color:#1c2038;font-size:12px;line-height:1.35;padding:6px 9px;border-radius:12px;max-width:130px;width:max-content;text-align:center;z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.35);word-break:keep-all;animation:pop .25s ease-out}
+.bub:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:#fff;border-bottom:0}
+@keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.85)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.cup{position:absolute;font-size:15px;transform:translate(-50%,-100%)}
+#vend{position:absolute;left:5%;top:51%;width:19%;height:25%;background:none;border:0;padding:0;cursor:pointer}
+#vend.lit:after{content:"";position:absolute;inset:-8px;border-radius:14px;box-shadow:0 0 22px 6px rgba(255,210,122,.55);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+#vendTip{position:absolute;left:3%;top:44%;font-size:11px;color:var(--gold);background:rgba(0,0,0,.45);padding:3px 8px;border-radius:10px;opacity:0;transition:opacity .5s;pointer-events:none}
+#vendTip.on{opacity:1}
+.bus{animation:bus 80s linear infinite;animation-delay:-62s}
+@keyframes bus{0%{transform:translateX(-200px)}12%{transform:translateX(520px)}100%{transform:translateX(520px)}}
+.win{animation:tw 5s ease-in-out infinite}
+@keyframes tw{50%{opacity:.5}}
+.bar{width:100%;max-width:480px;padding:8px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center}
+.bar input{flex:1;min-width:0;height:44px;border-radius:22px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--ink);padding:0 16px;font-size:15px;outline:none}
+.bar input::placeholder{color:#7f89ad}
+.bar button{height:44px;border:0;border-radius:22px;background:var(--gold);color:#2a1d05;font-weight:700;font-size:14px;padding:0 18px}
+.bar button:disabled{opacity:.45}
+.foot{width:100%;max-width:480px;text-align:center;font-size:11px;color:#6f789c;padding:0 14px calc(8px + env(safe-area-inset-bottom))}
+.foot a{color:#8e98c0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal.on{display:flex}
+.sheet{width:100%;max-width:480px;background:#171c38;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:86dvh;overflow:auto}
+.sheet h2{margin:0 0 4px;font-size:17px}
+.sheet .sub{margin:0 0 14px;font-size:13px;color:var(--dim)}
+.item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 14px;margin-bottom:8px;color:var(--ink);font-size:15px;text-decoration:none}
+.item .em{font-size:26px}
+.item small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
+.item.main{background:var(--gold);color:#2a1d05;border:0;font-weight:700}
+.item.main small{color:#5b4412}
+.ad{font-size:11px;color:#7f89ad;line-height:1.5;margin:8px 2px 0}
+.close{width:100%;height:42px;border:0;background:transparent;color:var(--dim);font-size:14px;margin-top:4px}
+.toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%);background:rgba(255,255,255,.95);color:#1c2038;font-size:13px;padding:9px 15px;border-radius:18px;opacity:0;pointer-events:none;transition:opacity .35s;z-index:30;max-width:88%;text-align:center}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="top"><h1>🚌 심야 버스 정류장</h1><div class="cnt">지금 <b id="n">1</b>/100명</div></div>
+<div class="notice" id="notice">매일 밤 11시, 막차 시간에 가장 많이 모여요</div>
+
+<div class="stage" id="stage">
+<svg class="bg" viewBox="0 0 360 560" preserveAspectRatio="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b1f"/><stop offset="1" stop-color="#232b52"/></linearGradient>
+    <radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
+    <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".32"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="360" height="560" fill="url(#sky)"/>
+  <g fill="#fff" opacity=".8"><circle cx="40" cy="40" r="1.2"/><circle cx="110" cy="70" r="1"/><circle cx="190" cy="30" r="1.3"/><circle cx="260" cy="82" r="1"/><circle cx="320" cy="48" r="1.2"/><circle cx="75" cy="115" r=".9"/><circle cx="230" cy="130" r="1"/></g>
+  <circle cx="295" cy="95" r="20" fill="#f4efd6"/><circle cx="303" cy="90" r="18" fill="#232b52" opacity=".0"/>
+  <g fill="#10152e"><rect x="0" y="215" width="50" height="190"/><rect x="48" y="245" width="42" height="160"/><rect x="92" y="195" width="58" height="210"/><rect x="152" y="255" width="40" height="150"/><rect x="194" y="225" width="52" height="180"/><rect x="248" y="260" width="48" height="145"/><rect x="298" y="205" width="62" height="200"/></g>
+  <g fill="#ffd27a"><rect class="win" x="10" y="235" width="6" height="8"/><rect x="26" y="262" width="6" height="8" opacity=".6"/><rect class="win" x="58" y="270" width="6" height="8"/><rect x="104" y="220" width="6" height="8"/><rect class="win" x="122" y="248" width="6" height="8"/><rect x="104" y="290" width="6" height="8" opacity=".6"/><rect class="win" x="204" y="248" width="6" height="8"/><rect x="224" y="280" width="6" height="8"/><rect class="win" x="310" y="230" width="6" height="8"/><rect x="332" y="262" width="6" height="8" opacity=".6"/><rect x="310" y="300" width="6" height="8"/></g>
+  <rect y="400" width="360" height="42" fill="#2a2e45"/><rect y="440" width="360" height="5" fill="#3a3f5c"/>
+  <rect y="445" width="360" height="115" fill="#161923"/>
+  <g stroke="#e8e0b0" stroke-width="3" stroke-dasharray="26 18" opacity=".7"><line x1="0" y1="510" x2="360" y2="510"/></g>
+  <g class="bus" transform="translate(0,0)"><g transform="translate(0,452)">
+    <rect x="0" y="0" width="130" height="44" rx="8" fill="#2f6fd0"/><rect x="8" y="7" width="22" height="16" rx="2" fill="#ffe9a8"/><rect x="36" y="7" width="22" height="16" rx="2" fill="#ffe9a8"/><rect x="64" y="7" width="22" height="16" rx="2" fill="#ffe9a8"/><rect x="92" y="7" width="26" height="16" rx="2" fill="#ffe9a8"/>
+    <rect x="0" y="28" width="130" height="4" fill="#ffd27a"/><circle cx="26" cy="46" r="8" fill="#0d0f16"/><circle cx="104" cy="46" r="8" fill="#0d0f16"/><circle cx="122" cy="38" r="3" fill="#fff6c8"/>
+  </g></g>
+  <polygon points="300,95 270,420 345,420" fill="url(#cone)"/><circle cx="300" cy="92" r="34" fill="url(#lamp)"/>
+  <rect x="297" y="94" width="6" height="318" fill="#3b4162"/><rect x="288" y="88" width="24" height="7" rx="3" fill="#4a5178"/>
+  <g><rect x="212" y="250" width="5" height="162" fill="#3b4162"/><rect x="190" y="236" width="52" height="40" rx="6" fill="#1d4e9e"/><rect x="195" y="241" width="42" height="12" rx="2" fill="#0d2a5c"/><text x="216" y="251" font-size="9" text-anchor="middle" fill="#ffe9a8" font-weight="700">막차 23:00</text><text x="216" y="268" font-size="8.5" text-anchor="middle" fill="#cfe1ff">N7 · 강남행</text></g>
+  <g id="vendBody"><rect x="18" y="286" width="68" height="126" rx="6" fill="#244a86"/><rect x="26" y="296" width="42" height="64" rx="3" fill="#0e1a36"/>
+    <g id="vendGlow"><rect x="26" y="296" width="42" height="64" rx="3" fill="#ffe9a8" opacity=".25"/>
+      <g fill="#ffd27a" opacity=".9"><rect x="30" y="302" width="10" height="14" rx="2"/><rect x="43" y="302" width="10" height="14" rx="2"/><rect x="56" y="302" width="9" height="14" rx="2"/><rect x="30" y="322" width="10" height="14" rx="2"/><rect x="43" y="322" width="10" height="14" rx="2"/><rect x="56" y="322" width="9" height="14" rx="2"/></g></g>
+    <rect x="72" y="298" width="9" height="40" rx="2" fill="#0e1a36"/><circle cx="76.5" cy="306" r="2" fill="#ff6a5a"/><circle cx="76.5" cy="316" r="2" fill="#8fe38f"/><rect x="28" y="378" width="34" height="22" rx="3" fill="#0b1226"/><text x="52" y="289" font-size="6" fill="#bcd2ff" text-anchor="middle" font-weight="700">HOT · COLD</text></g>
+  <g><rect x="108" y="372" width="170" height="8" rx="3" fill="#7a5a3a"/><rect x="108" y="380" width="170" height="3" fill="#4a3522"/><rect x="116" y="383" width="6" height="26" fill="#3d2d1d"/><rect x="264" y="383" width="6" height="26" fill="#3d2d1d"/><rect x="108" y="350" width="170" height="5" rx="2" fill="#7a5a3a"/><rect x="118" y="355" width="4" height="17" fill="#4a3522"/><rect x="264" y="355" width="4" height="17" fill="#4a3522"/></g>
+</svg>
+<button id="vend" aria-label="자판기"></button>
+<div id="vendTip">자판기 불이 켜졌어요</div>
+<div id="avs"></div>
+</div>
+
+<form class="bar" id="form"><input id="msg" maxlength="20" placeholder="한마디 남기기 (20자)" autocomplete="off"><button id="send" type="submit">남기기</button></form>
+<div class="foot">익명이에요 · 남긴 말은 잠깐 모두에게 보여요 · <a href="https://www.instagram.com/hanmadi.send/" target="_blank" rel="noopener">@hanmadi.send</a></div>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 설정 ===== */
+const TOPIC = 'hanmadi-busstop-v1-k3q9x7';
+const RELAY = 'https://ntfy.sh/' + TOPIC;
+const DONATE_URL = '';          // 토스·카카오페이 송금 링크 (비어 있으면 "준비 중")
+const SHOP = [                   // 쿠팡 파트너스 링크
+  {em:'🔥', name:'핫팩·손난로', sub:'추운 밤 정류장 필수템', url:'https://link.coupang.com/a/isijeXPrYy'},
+  {em:'😴', name:'목베개', sub:'졸다 고개 꺾이지 않게', url:'https://link.coupang.com/a/isikCrC8hU'},
+  {em:'🎧', name:'이어폰', sub:'기다리는 동안 한 곡', url:'https://link.coupang.com/a/isimeBuway'}
+];
+const COLORS = ['#ef6a5a','#f3a64a','#e8d25a','#7ccf7a','#5ac2c9','#6f9bf0','#a584ea','#ec7fb6'];
+const ACTIVE_MS = 55000, HB_MS = 20000, SAY_MS = 9000, GIFT_MS = 600000;
+const SEATS = [[135,392],[165,392],[195,392],[225,392]];
+const STAND = [[250,438],[285,436],[320,438],[215,440],[160,440],[110,440],[340,432],[130,432]];
+const $ = id => document.getElementById(id);
+
+/* ===== 상태 ===== */
+const me = {id: Math.random().toString(36).slice(2, 8), c: Math.floor(Math.random() * COLORS.length)};
+const users = new Map();   // id -> {c,last,say:{t,ts}}
+const gifts = [];          // {i,ts}
+const joined = Date.now();
+let lit = false, lastSay = 0;
+users.set(me.id, {c: me.c, last: Date.now()});
+
+/* ===== 중계 (ntfy.sh, 계정 없이 쓰는 무료 공개 중계) ===== */
+function pub(d){ try { fetch(RELAY, {method:'POST', body: JSON.stringify(d), keepalive:true}).catch(()=>{}); } catch {} }
+function handle(m){
+  if (!m || m.event !== 'message') return;
+  let d; try { d = JSON.parse(m.message); } catch { return; }
+  if (!d || typeof d.i !== 'string' || d.i === me.id) return;
+  const ts = (m.time || 0) * 1000 || Date.now();
+  if (d.k === 'bye') { users.delete(d.i); return; }
+  const u = users.get(d.i) || {c: 0, last: 0};
+  u.c = (d.c | 0) % COLORS.length; if (ts > u.last) u.last = ts;
+  users.set(d.i, u);
+  if (d.k === 'say' && typeof d.t === 'string') { u.say = {t: clean(d.t), ts}; }
+  if (d.k === 'gift') { gifts.push({i: d.i, ts}); if (Date.now() - ts < 15000) toast('누군가 따뜻한 커피를 놓고 갔어요 ☕'); }
+}
+async function backfill(){
+  try {
+    const r = await fetch(RELAY + '/json?poll=1&since=10m');
+    const t = await r.text();
+    t.split('\n').forEach(l => { if (l.trim()) { try { handle(JSON.parse(l)); } catch {} } });
+  } catch {}
+}
+function live(){
+  try {
+    const es = new EventSource(RELAY + '/sse');
+    es.onmessage = e => { try { handle(JSON.parse(e.data)); } catch {} };
+    es.onerror = () => {};
+  } catch {}
+}
+function beat(){ users.get(me.id).last = Date.now(); pub({k:'hb', i: me.id, c: me.c}); }
+
+/* ===== 문장 거르기 ===== */
+const BAD = ['시발','씨발','병신','개새','좆','지랄','섹스','자살','죽어','꺼져','ㅅㅂ','ㅂㅅ','ㅈㄹ'];
+function clean(t){
+  t = String(t).replace(/\s+/g, ' ').trim().slice(0, 20);
+  if (/(https?:|www\.|\.com|\.kr|\.net|@|카톡|오픈채팅|텔레)/i.test(t)) return '…';
+  for (const b of BAD) if (t.includes(b)) return '…';
+  return t;
+}
+
+/* ===== 그리기 ===== */
+function avatarSVG(color, sit){
+  const body = sit
+    ? `<rect x="5" y="20" width="20" height="17" rx="8" fill="${color}"/><rect x="3" y="33" width="24" height="7" rx="3" fill="#222844"/>`
+    : `<rect x="5" y="20" width="20" height="20" rx="8" fill="${color}"/><rect x="8" y="38" width="5" height="8" rx="2" fill="#222844"/><rect x="17" y="38" width="5" height="8" rx="2" fill="#222844"/>`;
+  return `<svg viewBox="0 0 30 46">${body}<circle cx="15" cy="12" r="9" fill="#f1cfa6"/><path d="M6 11a9 9 0 0 1 18 0c-3-3-6-4-9-4s-6 1-9 4z" fill="#2a2433"/><circle cx="12" cy="13" r="1" fill="#2a2433"/><circle cx="18" cy="13" r="1" fill="#2a2433"/></svg>`;
+}
+function active(){
+  const now = Date.now(), list = [];
+  users.forEach((u, id) => { if (id === me.id || now - u.last < ACTIVE_MS) list.push([id, u]); });
+  list.sort((a, b) => (a[0] === me.id ? -1 : b[0] === me.id ? 1 : a[0] < b[0] ? -1 : 1));
+  return list;
+}
+let sig = '';
+function render(){
+  const list = active(), now = Date.now();
+  $('n').textContent = list.length;
+  const shown = list.slice(0, SEATS.length + STAND.length);
+  const s = shown.map(([id]) => id).join(',') + '|' + gifts.filter(g => now - g.ts < GIFT_MS).length;
+  const box = $('avs');
+  if (s !== sig) {
+    sig = s; box.innerHTML = '';
+    shown.forEach(([id, u], k) => {
+      const sit = k < SEATS.length, p = sit ? SEATS[k] : STAND[k - SEATS.length];
+      const el = document.createElement('div'); el.className = 'av'; el.dataset.id = id;
+      el.style.left = (p[0] / 360 * 100) + '%'; el.style.top = (p[1] / 560 * 100) + '%';
+      el.innerHTML = avatarSVG(COLORS[u.c], sit) + (id === me.id ? '<span class="me">나</span>' : '');
+      box.appendChild(el);
+    });
+    gifts.filter(g => now - g.ts < GIFT_MS).slice(-4).forEach((g, k) => {
+      const c = document.createElement('div'); c.className = 'cup'; c.textContent = '☕';
+      c.style.left = ((122 + k * 36) / 360 * 100) + '%'; c.style.top = (371 / 560 * 100) + '%'; box.appendChild(c);
+    });
+  }
+  box.querySelectorAll('.av').forEach(el => {
+    const u = users.get(el.dataset.id); const b = el.querySelector('.bub');
+    const on = u && u.say && now - u.say.ts < SAY_MS;
+    if (on && !b) { const d = document.createElement('div'); d.className = 'bub'; d.textContent = u.say.t; el.appendChild(d); }
+    else if (!on && b) b.remove();
+    else if (on && b && b.textContent !== u.say.t) b.textContent = u.say.t;
+  });
+  if (!lit && now - joined > 150000) { lit = true; $('vend').classList.add('lit'); $('vendTip').classList.add('on'); setTimeout(() => $('vendTip').classList.remove('on'), 6000); }
+  const kst = new Date(now + 9 * 3600e3), hm = kst.getUTCHours() * 60 + kst.getUTCMinutes();
+  const hot = hm >= 22 * 60 + 50 && hm <= 23 * 60 + 20, nt = $('notice');
+  nt.classList.toggle('hot', hot);
+  nt.textContent = hot ? '🚌 지금 막차 시간이에요' : '매일 밤 11시, 막차 시간에 가장 많이 모여요';
+}
+
+/* ===== 한마디 ===== */
+$('form').addEventListener('submit', e => {
+  e.preventDefault();
+  const t = clean($('msg').value); if (!t) return;
+  if (Date.now() - lastSay < 8000) return toast('잠깐 쉬었다 남겨 주세요');
+  lastSay = Date.now();
+  const u = users.get(me.id); u.say = {t, ts: Date.now()};
+  pub({k:'say', i: me.id, c: me.c, t}); $('msg').value = ''; render();
+});
+
+/* ===== 자판기 ===== */
+function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2600); }
+function openVend(){
+  const sh = $('sheet');
+  const shop = SHOP.map(s => s.url
+    ? `<a class="item" href="${s.url}" target="_blank" rel="noopener sponsored"><span class="em">${s.em}</span><span>${s.name}<small>${s.sub}</small></span></a>`
+    : '').join('');
+  sh.innerHTML = `<h2>🥫 자판기</h2><p class="sub">따뜻한 걸로 한 잔 뽑아 가세요</p>
+    <button class="item main" id="coffee"><span class="em">☕</span><span>따뜻한 캔커피 뽑아 주기<small>정류장에 앉은 모두에게 커피가 놓여요</small></span></button>
+    ${shop ? '<p class="sub" style="margin:12px 0 8px">기다리는 밤에 쓸 만한 것</p>' + shop + '<p class="ad">이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>' : ''}
+    <button class="close" id="close">닫기</button>`;
+  $('modal').classList.add('on');
+  $('close').onclick = () => $('modal').classList.remove('on');
+  $('coffee').onclick = () => {
+    if (!DONATE_URL) return toast('커피 자판기는 곧 열려요');
+    window.open(DONATE_URL, '_blank', 'noopener');
+    sh.innerHTML = `<h2>☕ 커피 뽑으셨어요?</h2><p class="sub">송금을 마치셨다면 정류장에 커피를 놓아 드릴게요.</p>
+      <button class="item main" id="done"><span class="em">🙌</span><span>네, 커피를 놓을게요</span></button><button class="close" id="close2">아직이에요</button>`;
+    $('close2').onclick = () => $('modal').classList.remove('on');
+    $('done').onclick = () => { gifts.push({i: me.id, ts: Date.now()}); pub({k:'gift', i: me.id}); $('modal').classList.remove('on'); toast('따뜻한 커피를 놓았어요 ☕'); render(); };
+  };
+}
+$('vend').onclick = openVend;
+$('modal').addEventListener('click', e => { if (e.target === $('modal')) $('modal').classList.remove('on'); });
+
+/* ===== 시작 ===== */
+backfill().then(() => { beat(); live(); render(); });
+setInterval(beat, HB_MS);
+setInterval(render, 1000);
+addEventListener('pagehide', () => { try { navigator.sendBeacon(RELAY, JSON.stringify({k:'bye', i: me.id})); } catch {} });
+render();
+</script>
+</body>
+</html>
