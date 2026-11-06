@@ -91,8 +91,8 @@ textarea{width:100%;max-width:360px;height:120px;border-radius:16px;border:2px s
       <div class="slip" id="slip"><span id="slipText"></span><small id="slipFrom">붕어빵에서 나온 한마디</small></div>
       <div class="caption" id="caption"></div>
     </div>
-    <div class="counter" id="counterView"></div>
     <div class="cta" id="cta">
+      <div class="counter" id="counterView" style="margin:0 0 12px"></div>
       <button class="btn main" id="btnMine">🐟 나도 구워서 보내기</button>
       <button class="btn sub2" id="btnReplay">다시 굽는 거 보기</button>
     </div>
@@ -147,7 +147,7 @@ const makeLink = m => location.origin === 'null' || location.protocol === 'file:
   ? location.href.split('#')[0] + '#t=' + themeId + '&m=' + enc(m)
   : location.origin + location.pathname + '#t=' + themeId + '&m=' + enc(m);
 
-function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); }
+function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); if (id !== 'sView') { hint.style.opacity = 0; muteBtn.style.display = 'none'; } }
 function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('on'); setTimeout(()=>e.classList.remove('on'),1800); }
 
 /* 전국 카운터: 무료 공개 카운터(abacus). 실패하면 조용히 숨김 */
@@ -161,6 +161,69 @@ async function showCount(el){
   const n = await counter('get');
   if (n !== null) el.innerHTML = `지금까지 전국에서 구운 붕어빵 <b>${n.toLocaleString('ko-KR')}</b>개`;
 }
+
+/* 소리: 파일 없이 웹오디오로 합성 (효과음 + 따뜻한 마림바풍 BGM) */
+const Snd = (() => {
+  let ctx = null, muted = false, nbuf = null;
+  try { muted = localStorage.getItem('hm_muted') === '1'; } catch {}
+  const init = () => {
+    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; } }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  const ok = () => ctx && ctx.state === 'running' && !muted;
+  const noise = () => {
+    if (!nbuf) { nbuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate); const d = nbuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    const s = ctx.createBufferSource(); s.buffer = nbuf; return s;
+  };
+  const tone = (f, L, r, h, g) => { if (!ok()) return; const t = ctx.currentTime;
+    h.forEach((a, k) => { const o = ctx.createOscillator(), G = ctx.createGain(); o.frequency.value = f * (k + 1);
+      G.gain.setValueAtTime(0, t); G.gain.linearRampToValueAtTime(g * a, t + .005); G.gain.setTargetAtTime(0, t + .005, r);
+      o.connect(G).connect(ctx.destination); o.start(t); o.stop(t + L); }); };
+  const whoosh = (L, f0, f1, g) => { if (!ok()) return; const t = ctx.currentTime, s = noise(), fl = ctx.createBiquadFilter(), G = ctx.createGain();
+    fl.type = 'bandpass'; fl.Q.value = .8; fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(f1, t + L);
+    G.gain.setValueAtTime(0, t); G.gain.linearRampToValueAtTime(g, t + L * .45); G.gain.linearRampToValueAtTime(0, t + L);
+    s.connect(fl).connect(G).connect(ctx.destination); s.start(t, Math.random()); s.stop(t + L); };
+  const sizzle = (L, g) => { if (!ok()) return; const t = ctx.currentTime, s = noise(), fl = ctx.createBiquadFilter(), G = ctx.createGain();
+    fl.type = 'highpass'; fl.frequency.value = 3500;
+    G.gain.setValueAtTime(0, t); G.gain.linearRampToValueAtTime(g, t + .2);
+    for (let x = .25; x < L - .3; x += .04) G.gain.linearRampToValueAtTime(g * (.4 + Math.random() * .9), t + x);
+    G.gain.linearRampToValueAtTime(0, t + L);
+    s.connect(fl).connect(G).connect(ctx.destination); s.start(t, Math.random()); s.stop(t + L); };
+  const SC = [262, 294, 330, 392, 440, 523], PAT = [0, 2, 3, 5, 3, 2, 4, 2];
+  return {
+    init, ok,
+    get muted() { return muted; },
+    setMuted(v) { muted = v; try { localStorage.setItem('hm_muted', v ? '1' : '0'); } catch {} },
+    pour: () => whoosh(.9, 400, 1400, .22),
+    bean: () => tone(180, .25, .03, [1, .5], .35),
+    clamp: () => tone(90, .3, .03, [1, .6, .3], .5),
+    flip: () => whoosh(.9, 1200, 300, .25),
+    sizzle: () => sizzle(1.4, .12),
+    ding: () => { [[784, 0], [988, .09], [1318, .18]].forEach(([f, d]) => setTimeout(() => tone(f, .9, .12, [1, .3, .1], .28), d * 1000)); },
+    paper: () => whoosh(.5, 3000, 800, .18),
+    sparkle: () => [1318, 1568, 1976, 2637].forEach((f, k) => setTimeout(() => tone(f, .7, .1, [1, .2], .13), k * 70)),
+    note: b => { const f = SC[PAT[b % 8]]; tone(f, .5, .07, [1, .25, .08], .09); if (b % 4 === 0) tone(f / 2, .9, .15, [1, .2], .07); }
+  };
+})();
+/* 첫 터치에 소리 켜기 → 소리 없이 시작했다면 처음부터 다시 굽는다 */
+let soundWasOff = false;
+const hint = document.createElement('div');
+hint.style.cssText = 'position:absolute;left:0;right:0;top:56px;text-align:center;font-size:13px;color:#f5c15a;opacity:.9;z-index:9;pointer-events:none;transition:opacity .4s';
+hint.textContent = '🔊 화면을 톡 누르면 소리가 나와요';
+const muteBtn = document.createElement('button');
+muteBtn.style.cssText = 'position:absolute;right:12px;top:12px;z-index:9;background:rgba(0,0,0,.35);border:0;border-radius:18px;color:#fff;font-size:16px;width:36px;height:36px';
+const paintMute = () => muteBtn.textContent = Snd.muted ? '🔇' : '🔊';
+muteBtn.onclick = e => { e.stopPropagation(); Snd.init(); Snd.setMuted(!Snd.muted); paintMute(); };
+paintMute();
+$('sView').appendChild(hint); $('sView').appendChild(muteBtn);
+addEventListener('pointerdown', () => {
+  const was = Snd.ok(); Snd.init(); hint.style.opacity = 0;
+  if (!was && soundWasOff && !Snd.muted && $('sView').classList.contains('on') && !$('cta').classList.contains('on')) {
+    soundWasOff = false;
+    setTimeout(() => toView(new URLSearchParams(location.hash.slice(1)).get('m') ? dec(new URLSearchParams(location.hash.slice(1)).get('m')) : myMsg), 120);
+  }
+}, {passive: true});
 
 /* 굽는 장면 (약 7초) */
 let timers = [];
@@ -177,15 +240,18 @@ function bake(msg){
   const c = t => $('caption').textContent = t;
   $('slipText').textContent = msg;
   $('slipFrom').textContent = theme.from;
+  Snd.init(); soundWasOff = !Snd.ok() && !Snd.muted;
+  hint.style.opacity = soundWasOff ? .9 : 0; muteBtn.style.display = '';
   wait(100,  () => { $('mold').classList.add('open'); c(theme.steps[0]); });
-  wait(700,  () => $('batter').classList.add('on'));
-  wait(1700, () => { c(theme.steps[1]); $('bean').classList.add('on'); });
-  wait(2800, () => { c(theme.steps[2]); $('mold').classList.remove('open'); });
-  wait(3500, () => $('mold').classList.add('flip'));
-  wait(4700, () => { c(theme.steps[3]); $('steam').classList.add('on'); });
-  wait(5700, () => { c(theme.steps[4]); $('stage').classList.add('done'); $('bigfish').classList.add('on'); });
-  wait(6500, () => { c(''); $('bigfish').style.top = '0%'; $('slip').classList.add('on'); });
-  wait(7300, () => $('cta').classList.add('on'));
+  wait(700,  () => { $('batter').classList.add('on'); Snd.pour(); });
+  wait(1700, () => { c(theme.steps[1]); $('bean').classList.add('on'); Snd.bean(); });
+  wait(2800, () => { c(theme.steps[2]); $('mold').classList.remove('open'); Snd.clamp(); });
+  wait(3500, () => { $('mold').classList.add('flip'); Snd.flip(); });
+  wait(4700, () => { c(theme.steps[3]); $('steam').classList.add('on'); Snd.sizzle(); });
+  wait(5700, () => { c(theme.steps[4]); $('stage').classList.add('done'); $('bigfish').classList.add('on'); Snd.ding(); });
+  wait(6500, () => { c(''); $('bigfish').style.top = '0%'; $('slip').classList.add('on'); Snd.paper(); });
+  wait(7300, () => { $('cta').classList.add('on'); Snd.sparkle(); });
+  for (let b = 0; b < 26; b++) wait(300 + b * 300, () => Snd.note(b));
 }
 
 /* 화면 흐름 */
