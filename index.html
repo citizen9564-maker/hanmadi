@@ -241,6 +241,7 @@ function bake(msg){
   $('slipFrom').textContent = theme.from;
   Snd.init(); soundWasOff = !Snd.ok() && !Snd.muted;
   hint.style.opacity = soundWasOff ? .9 : 0; muteBtn.style.display = '';
+  if (new URLSearchParams(location.hash.slice(1)).get('rec') === '1') { hint.style.display = muteBtn.style.display = 'none'; $('counterView').style.display = 'none'; }
   wait(100,  () => { $('mold').classList.add('open'); c(theme.steps[0]); });
   wait(700,  () => { $('batter').classList.add('on'); Snd.pour(); });
   wait(1700, () => { c(theme.steps[1]); $('bean').classList.add('on'); Snd.bean(); });
