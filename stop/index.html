@@ -7,41 +7,45 @@
 <title>심야 버스 정류장 · 한마디</title>
 <meta name="description" content="막차를 기다리는 사람들이 모이는 심야 버스 정류장. 말없이 같이 앉아 있다 가요.">
 <meta property="og:title" content="심야 버스 정류장">
-<meta property="og:description" content="막차를 기다리며 같이 앉아 있다 가요.">
+<meta property="og:description" content="매일 밤 11시, 막차를 같이 기다려요.">
 <style>
 :root{--ink:#f3efe6;--dim:#9aa3c4;--gold:#ffd27a;--bg:#0b1026}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
 body{display:flex;flex-direction:column;align-items:center;overflow:hidden}
-.top{width:100%;max-width:480px;display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 14px 6px}
-.top h1{margin:0;font-size:16px;font-weight:700;letter-spacing:-.2px}
+.top{width:100%;max-width:480px;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 14px 6px}
+.top h1{margin:0;font-size:16px;font-weight:700;letter-spacing:-.2px;flex:1}
 .top .cnt{font-size:13px;color:var(--dim);background:rgba(255,255,255,.07);padding:5px 10px;border-radius:14px}
 .top .cnt b{color:var(--gold)}
-.notice{width:100%;max-width:480px;text-align:center;font-size:12.5px;color:var(--dim);padding:0 14px 6px}
-.notice.hot{color:var(--gold)}
-.stage{position:relative;width:100%;max-width:480px;aspect-ratio:360/560;flex:0 1 auto;max-height:calc(100dvh - 190px)}
+.snd{width:32px;height:32px;border:0;border-radius:16px;background:rgba(255,255,255,.07);color:var(--ink);font-size:15px;padding:0}
+.notice{width:100%;max-width:480px;text-align:center;font-size:12.5px;color:var(--dim);padding:0 14px 6px;min-height:22px}
+.notice.hot{color:var(--gold);font-weight:700}
+.stage{position:relative;width:100%;max-width:480px;aspect-ratio:360/560;flex:0 1 auto;max-height:calc(100dvh - 190px);overflow:hidden}
 .stage svg.bg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.av{position:absolute;width:8.6%;transform:translate(-50%,-100%);transition:left .6s,top .6s;pointer-events:none}
+#rain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.av{position:absolute;width:8.6%;transform:translate(-50%,-100%);transition:left .6s,top .6s,opacity 1.6s;pointer-events:none}
 .av svg{width:100%;display:block;overflow:visible}
 .av .me{position:absolute;left:50%;top:-20px;transform:translateX(-50%);font-size:10px;color:var(--gold);white-space:nowrap}
+#avs.boarded .av,#avs.boarded .cup{opacity:0}
 .bub{position:absolute;left:50%;bottom:112%;transform:translateX(-50%);background:#fff;color:#1c2038;font-size:12px;line-height:1.35;padding:6px 9px;border-radius:12px;max-width:130px;width:max-content;text-align:center;z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.35);word-break:keep-all;animation:pop .25s ease-out}
 .bub:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:#fff;border-bottom:0}
 @keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.85)}to{opacity:1;transform:translateX(-50%) scale(1)}}
-.cup{position:absolute;font-size:15px;transform:translate(-50%,-100%)}
-#vend{position:absolute;left:5%;top:51%;width:19%;height:25%;background:none;border:0;padding:0;cursor:pointer}
+.cup{position:absolute;font-size:15px;transform:translate(-50%,-100%);transition:opacity 1.6s}
+#board{position:absolute;left:29.6%;top:52.3%;width:48.2%;height:9.4%;display:grid;grid-template-columns:repeat(3,1fr);gap:3px 4px;padding:3px 4px;background:none;border:0;cursor:pointer;align-content:start;z-index:1}
+#board .nt{background:#fff1a8;color:#3a2e10;font-size:8.5px;line-height:1.25;padding:2px 3px;border-radius:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 2px rgba(0,0,0,.4);text-align:left}
+#board .nt:nth-child(3n+1){background:#ffd6e0}#board .nt:nth-child(3n+2){background:#d6ecff}
+#boardTag{position:absolute;left:29.6%;top:49.4%;font-size:9px;color:#cfd8ff;opacity:.85;pointer-events:none;z-index:1}
+#vend{position:absolute;left:5%;top:51%;width:19%;height:25%;background:none;border:0;padding:0;cursor:pointer;z-index:2}
 #vend.lit:after{content:"";position:absolute;inset:-8px;border-radius:14px;box-shadow:0 0 22px 6px rgba(255,210,122,.55);animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.35}}
-#vendTip{position:absolute;left:3%;top:44%;font-size:11px;color:var(--gold);background:rgba(0,0,0,.45);padding:3px 8px;border-radius:10px;opacity:0;transition:opacity .5s;pointer-events:none}
+#vendTip{position:absolute;left:3%;top:44%;font-size:11px;color:var(--gold);background:rgba(0,0,0,.45);padding:3px 8px;border-radius:10px;opacity:0;transition:opacity .5s;pointer-events:none;z-index:4}
 #vendTip.on{opacity:1}
-.bus{animation:bus 80s linear infinite;animation-delay:-62s}
-@keyframes bus{0%{transform:translateX(-200px)}12%{transform:translateX(520px)}100%{transform:translateX(520px)}}
 .win{animation:tw 5s ease-in-out infinite}
 @keyframes tw{50%{opacity:.5}}
 .bar{width:100%;max-width:480px;padding:8px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center}
 .bar input{flex:1;min-width:0;height:44px;border-radius:22px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--ink);padding:0 16px;font-size:15px;outline:none}
 .bar input::placeholder{color:#7f89ad}
 .bar button{height:44px;border:0;border-radius:22px;background:var(--gold);color:#2a1d05;font-weight:700;font-size:14px;padding:0 18px}
-.bar button:disabled{opacity:.45}
 .foot{width:100%;max-width:480px;text-align:center;font-size:11px;color:#6f789c;padding:0 14px calc(8px + env(safe-area-inset-bottom))}
 .foot a{color:#8e98c0}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:20}
@@ -54,15 +58,35 @@ body{display:flex;flex-direction:column;align-items:center;overflow:hidden}
 .item small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
 .item.main{background:var(--gold);color:#2a1d05;border:0;font-weight:700}
 .item.main small{color:#5b4412}
+.notes{list-style:none;margin:0 0 6px;padding:0}
+.notes li{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:6px;background:#fff1a8;color:#3a2e10;border-radius:4px;font-size:14px}
+.notes li:nth-child(3n+1){background:#ffd6e0}.notes li:nth-child(3n+2){background:#d6ecff}
+.notes li span{font-size:11px;color:#7a6a40;white-space:nowrap}
 .ad{font-size:11px;color:#7f89ad;line-height:1.5;margin:8px 2px 0}
 .close{width:100%;height:42px;border:0;background:transparent;color:var(--dim);font-size:14px;margin-top:4px}
 .toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%);background:rgba(255,255,255,.95);color:#1c2038;font-size:13px;padding:9px 15px;border-radius:18px;opacity:0;pointer-events:none;transition:opacity .35s;z-index:30;max-width:88%;text-align:center}
 .toast.on{opacity:1}
+.gate{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:radial-gradient(ellipse at 50% 30%,rgba(255,233,168,.12),transparent 60%),rgba(7,11,31,.94);transition:opacity .9s}
+.gate.off{opacity:0;pointer-events:none}
+.gate .big{font-size:46px;margin-bottom:4px}
+.gate h2{margin:0;font-size:22px;letter-spacing:-.3px}
+.gate p{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
+.gate p b{color:var(--gold)}
+.gate button{margin-top:14px;height:52px;padding:0 30px;border:0;border-radius:26px;background:var(--gold);color:#2a1d05;font-size:16px;font-weight:700;box-shadow:0 0 30px rgba(255,210,122,.35)}
+.gate small{color:#6f789c;font-size:12px;margin-top:4px}
 </style>
 </head>
 <body>
-<div class="top"><h1>🚌 심야 버스 정류장</h1><div class="cnt">지금 <b id="n">1</b>/100명</div></div>
-<div class="notice" id="notice">매일 밤 11시, 막차 시간에 가장 많이 모여요</div>
+<div class="gate" id="gate">
+  <div class="big">🚌</div>
+  <h2>심야 버스 정류장</h2>
+  <p>지금 <b id="gN">1</b>명이 막차를 기다리고 있어요<br>오늘 밤 다녀간 사람 <b id="gV">0</b>명 · 남긴 쪽지 <b id="gT">0</b>장</p>
+  <button id="enter">정류장으로 들어가기</button>
+  <small>🎧 소리를 켜면 비 오는 밤이 들려요</small>
+</div>
+
+<div class="top"><h1>🚌 심야 버스 정류장</h1><div class="cnt">지금 <b id="n">1</b>명</div><button class="snd" id="snd" aria-label="소리">🔊</button></div>
+<div class="notice" id="notice">매일 밤 11시, 막차를 같이 기다려요</div>
 
 <div class="stage" id="stage">
 <svg class="bg" viewBox="0 0 360 560" preserveAspectRatio="none" aria-hidden="true">
@@ -70,44 +94,74 @@ body{display:flex;flex-direction:column;align-items:center;overflow:hidden}
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b1f"/><stop offset="1" stop-color="#232b52"/></linearGradient>
     <radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
     <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".32"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></linearGradient>
+    <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4370" stop-opacity="0"/><stop offset="1" stop-color="#3a4370" stop-opacity=".55"/></linearGradient>
+    <linearGradient id="refl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></linearGradient>
   </defs>
   <rect width="360" height="560" fill="url(#sky)"/>
-  <g fill="#fff" opacity=".8"><circle cx="40" cy="40" r="1.2"/><circle cx="110" cy="70" r="1"/><circle cx="190" cy="30" r="1.3"/><circle cx="260" cy="82" r="1"/><circle cx="320" cy="48" r="1.2"/><circle cx="75" cy="115" r=".9"/><circle cx="230" cy="130" r="1"/></g>
-  <circle cx="295" cy="95" r="20" fill="#f4efd6"/><circle cx="303" cy="90" r="18" fill="#232b52" opacity=".0"/>
-  <g fill="#10152e"><rect x="0" y="215" width="50" height="190"/><rect x="48" y="245" width="42" height="160"/><rect x="92" y="195" width="58" height="210"/><rect x="152" y="255" width="40" height="150"/><rect x="194" y="225" width="52" height="180"/><rect x="248" y="260" width="48" height="145"/><rect x="298" y="205" width="62" height="200"/></g>
-  <g fill="#ffd27a"><rect class="win" x="10" y="235" width="6" height="8"/><rect x="26" y="262" width="6" height="8" opacity=".6"/><rect class="win" x="58" y="270" width="6" height="8"/><rect x="104" y="220" width="6" height="8"/><rect class="win" x="122" y="248" width="6" height="8"/><rect x="104" y="290" width="6" height="8" opacity=".6"/><rect class="win" x="204" y="248" width="6" height="8"/><rect x="224" y="280" width="6" height="8"/><rect class="win" x="310" y="230" width="6" height="8"/><rect x="332" y="262" width="6" height="8" opacity=".6"/><rect x="310" y="300" width="6" height="8"/></g>
+  <g id="far">
+    <g fill="#fff" opacity=".8"><circle cx="40" cy="40" r="1.2"/><circle cx="110" cy="70" r="1"/><circle cx="190" cy="30" r="1.3"/><circle cx="260" cy="82" r="1"/><circle cx="320" cy="48" r="1.2"/><circle cx="75" cy="115" r=".9"/><circle cx="230" cy="130" r="1"/></g>
+    <circle cx="295" cy="95" r="20" fill="#f4efd6" opacity=".85"/>
+  </g>
+  <g id="mid">
+    <g fill="#10152e"><rect x="-20" y="215" width="70" height="190"/><rect x="48" y="245" width="42" height="160"/><rect x="92" y="195" width="58" height="210"/><rect x="152" y="255" width="40" height="150"/><rect x="194" y="225" width="52" height="180"/><rect x="248" y="260" width="48" height="145"/><rect x="298" y="205" width="82" height="200"/></g>
+    <g fill="#ffd27a"><rect class="win" x="10" y="235" width="6" height="8"/><rect x="26" y="262" width="6" height="8" opacity=".6"/><rect class="win" x="58" y="270" width="6" height="8"/><rect x="104" y="220" width="6" height="8"/><rect class="win" x="122" y="248" width="6" height="8"/><rect x="104" y="290" width="6" height="8" opacity=".6"/><rect class="win" x="204" y="248" width="6" height="8"/><rect x="224" y="280" width="6" height="8"/><rect class="win" x="310" y="230" width="6" height="8"/><rect x="332" y="262" width="6" height="8" opacity=".6"/><rect x="310" y="300" width="6" height="8"/></g>
+    <rect x="-20" y="300" width="400" height="105" fill="url(#fog)"/>
+  </g>
   <rect y="400" width="360" height="42" fill="#2a2e45"/><rect y="440" width="360" height="5" fill="#3a3f5c"/>
   <rect y="445" width="360" height="115" fill="#161923"/>
-  <g stroke="#e8e0b0" stroke-width="3" stroke-dasharray="26 18" opacity=".7"><line x1="0" y1="510" x2="360" y2="510"/></g>
-  <g class="bus" transform="translate(0,0)"><g transform="translate(0,452)">
+  <g stroke="#e8e0b0" stroke-width="3" stroke-dasharray="26 18" opacity=".55"><line x1="0" y1="510" x2="360" y2="510"/></g>
+  <!-- 젖은 길에 비친 불빛 -->
+  <rect id="lampRefl" x="282" y="446" width="36" height="110" fill="url(#refl)" opacity=".8"/>
+  <rect x="30" y="446" width="44" height="70" fill="url(#refl)" opacity=".35"/>
+  <!-- 지나가는 버스 / 막차 -->
+  <g id="bus" transform="translate(-220,452)">
     <rect x="0" y="0" width="130" height="44" rx="8" fill="#2f6fd0"/><rect x="8" y="7" width="22" height="16" rx="2" fill="#ffe9a8"/><rect x="36" y="7" width="22" height="16" rx="2" fill="#ffe9a8"/><rect x="64" y="7" width="22" height="16" rx="2" fill="#ffe9a8"/><rect x="92" y="7" width="26" height="16" rx="2" fill="#ffe9a8"/>
     <rect x="0" y="28" width="130" height="4" fill="#ffd27a"/><circle cx="26" cy="46" r="8" fill="#0d0f16"/><circle cx="104" cy="46" r="8" fill="#0d0f16"/><circle cx="122" cy="38" r="3" fill="#fff6c8"/>
-  </g></g>
-  <polygon points="300,95 270,420 345,420" fill="url(#cone)"/><circle cx="300" cy="92" r="34" fill="url(#lamp)"/>
+  </g>
+  <g id="last" transform="translate(-260,446)">
+    <rect x="0" y="0" width="160" height="52" rx="9" fill="#1d4e9e"/><rect x="104" y="4" width="50" height="10" rx="2" fill="#0b1630"/><text x="129" y="12" font-size="8" text-anchor="middle" fill="#ffb347" font-weight="700">N7 막차</text>
+    <rect x="8" y="17" width="22" height="17" rx="2" fill="#ffe9a8"/><rect x="34" y="17" width="22" height="17" rx="2" fill="#ffe9a8"/><rect x="60" y="17" width="22" height="17" rx="2" fill="#ffe9a8"/>
+    <rect id="door" x="88" y="16" width="20" height="34" rx="2" fill="#0e2550"/><rect x="112" y="17" width="40" height="17" rx="2" fill="#ffe9a8"/>
+    <rect x="0" y="38" width="160" height="4" fill="#ffd27a"/><circle cx="30" cy="54" r="9" fill="#0d0f16"/><circle cx="128" cy="54" r="9" fill="#0d0f16"/><circle cx="153" cy="44" r="3.5" fill="#fff6c8"/>
+  </g>
+  <!-- 가로등 -->
+  <g id="lampG"><polygon points="300,95 270,420 345,420" fill="url(#cone)"/><circle cx="300" cy="92" r="34" fill="url(#lamp)"/></g>
   <rect x="297" y="94" width="6" height="318" fill="#3b4162"/><rect x="288" y="88" width="24" height="7" rx="3" fill="#4a5178"/>
-  <g><rect x="212" y="250" width="5" height="162" fill="#3b4162"/><rect x="190" y="236" width="52" height="40" rx="6" fill="#1d4e9e"/><rect x="195" y="241" width="42" height="12" rx="2" fill="#0d2a5c"/><text x="216" y="251" font-size="9" text-anchor="middle" fill="#ffe9a8" font-weight="700">막차 23:00</text><text x="216" y="268" font-size="8.5" text-anchor="middle" fill="#cfe1ff">N7 · 강남행</text></g>
+  <!-- 정류장 지붕·쪽지 유리판 -->
+  <rect x="96" y="282" width="194" height="8" rx="2" fill="#2d3556"/>
+  <rect x="104" y="290" width="178" height="58" rx="3" fill="#1a2448" opacity=".6" stroke="#3b4a7a" stroke-width="1"/>
+  <rect x="100" y="290" width="4" height="122" fill="#2d3556"/><rect x="282" y="290" width="4" height="122" fill="#2d3556"/>
+  <g><rect x="212" y="270" width="5" height="12" fill="#3b4162"/><rect x="190" y="236" width="52" height="36" rx="6" fill="#1d4e9e"/><rect x="195" y="241" width="42" height="12" rx="2" fill="#0d2a5c"/><text x="216" y="251" font-size="9" text-anchor="middle" fill="#ffe9a8" font-weight="700">막차 23:00</text><text x="216" y="266" font-size="8.5" text-anchor="middle" fill="#cfe1ff">N7 · 강남행</text></g>
+  <!-- 자판기 -->
   <g id="vendBody"><rect x="18" y="286" width="68" height="126" rx="6" fill="#244a86"/><rect x="26" y="296" width="42" height="64" rx="3" fill="#0e1a36"/>
-    <g id="vendGlow"><rect x="26" y="296" width="42" height="64" rx="3" fill="#ffe9a8" opacity=".25"/>
+    <g><rect x="26" y="296" width="42" height="64" rx="3" fill="#ffe9a8" opacity=".25"/>
       <g fill="#ffd27a" opacity=".9"><rect x="30" y="302" width="10" height="14" rx="2"/><rect x="43" y="302" width="10" height="14" rx="2"/><rect x="56" y="302" width="9" height="14" rx="2"/><rect x="30" y="322" width="10" height="14" rx="2"/><rect x="43" y="322" width="10" height="14" rx="2"/><rect x="56" y="322" width="9" height="14" rx="2"/></g></g>
-    <rect x="72" y="298" width="9" height="40" rx="2" fill="#0e1a36"/><circle cx="76.5" cy="306" r="2" fill="#ff6a5a"/><circle cx="76.5" cy="316" r="2" fill="#8fe38f"/><rect x="28" y="378" width="34" height="22" rx="3" fill="#0b1226"/><text x="52" y="289" font-size="6" fill="#bcd2ff" text-anchor="middle" font-weight="700">HOT · COLD</text></g>
+    <rect x="72" y="298" width="9" height="40" rx="2" fill="#0e1a36"/><circle cx="76.5" cy="306" r="2" fill="#ff6a5a"/><circle cx="76.5" cy="316" r="2" fill="#8fe38f"/><rect x="28" y="378" width="34" height="22" rx="3" fill="#0b1226"/><text x="52" y="282" font-size="6" fill="#bcd2ff" text-anchor="middle" font-weight="700">HOT · COLD</text></g>
+  <!-- 벤치 -->
   <g><rect x="108" y="372" width="170" height="8" rx="3" fill="#7a5a3a"/><rect x="108" y="380" width="170" height="3" fill="#4a3522"/><rect x="116" y="383" width="6" height="26" fill="#3d2d1d"/><rect x="264" y="383" width="6" height="26" fill="#3d2d1d"/><rect x="108" y="350" width="170" height="5" rx="2" fill="#7a5a3a"/><rect x="118" y="355" width="4" height="17" fill="#4a3522"/><rect x="264" y="355" width="4" height="17" fill="#4a3522"/></g>
 </svg>
+<div id="boardTag">📝 오늘 밤 쪽지 <span id="tN">0</span></div>
+<button id="board" aria-label="오늘 밤 쪽지 보기"></button>
 <button id="vend" aria-label="자판기"></button>
 <div id="vendTip">자판기 불이 켜졌어요</div>
 <div id="avs"></div>
+<canvas id="rain"></canvas>
 </div>
 
-<form class="bar" id="form"><input id="msg" maxlength="20" placeholder="한마디 남기기 (20자)" autocomplete="off"><button id="send" type="submit">남기기</button></form>
-<div class="foot">익명이에요 · 남긴 말은 잠깐 모두에게 보여요 · <a href="https://www.instagram.com/hanmadi.send/" target="_blank" rel="noopener">@hanmadi.send</a></div>
+<form class="bar" id="form"><input id="msg" maxlength="20" placeholder="쪽지 한 줄 남기기 (20자)" autocomplete="off"><button id="send" type="submit">남기기</button></form>
+<div class="foot">익명이에요 · 남긴 쪽지는 오늘 밤 동안 정류장에 붙어 있어요 · <a href="https://www.instagram.com/hanmadi.send/" target="_blank" rel="noopener">@hanmadi.send</a></div>
 
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* ===== 설정 ===== */
-const TOPIC = 'hanmadi-busstop-v1-k3q9x7';
-const RELAY = 'https://ntfy.sh/' + TOPIC;
-const DONATE_URL = '';          // 토스·카카오페이 송금 링크 (비어 있으면 "준비 중")
+const TEST = /test/.test(location.hash);           // #test 이면 시험용 방 + 8초 뒤 막차 시연
+const TOPIC = 'hanmadi-busstop-v1-k3q9x7' + (TEST ? '-test' : '');
+const RELAY = 'https://ntfy.sh/' + TOPIC;          // 실시간 (하트비트·말풍선)
+const WALL  = 'https://ntfy.sh/' + TOPIC + '-wall'; // 쪽지·방문 기록 (12시간 보관)
+const ACCOUNT = null;            // {bank, no, name} — 공개 여부 대표님 결정 전까지 비움
+const DONATE_URL = '';           // 토스 송금 링크 (toss.me/아이디). 비어 있으면 "곧 열려요"
 const SHOP = [                   // 쿠팡 파트너스 링크
   {em:'🔥', name:'핫팩·손난로', sub:'추운 밤 정류장 필수템', url:'https://link.coupang.com/a/isijeXPrYy'},
   {em:'😴', name:'목베개', sub:'졸다 고개 꺾이지 않게', url:'https://link.coupang.com/a/isikCrC8hU'},
@@ -118,44 +172,59 @@ const ACTIVE_MS = 55000, HB_MS = 20000, SAY_MS = 9000, GIFT_MS = 600000;
 const SEATS = [[135,392],[165,392],[195,392],[225,392]];
 const STAND = [[250,438],[285,436],[320,438],[215,440],[160,440],[110,440],[340,432],[130,432]];
 const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
 
 /* ===== 상태 ===== */
 const me = {id: Math.random().toString(36).slice(2, 8), c: Math.floor(Math.random() * COLORS.length)};
-const users = new Map();   // id -> {c,last,say:{t,ts}}
-const gifts = [];          // {i,ts}
-const joined = Date.now();
-let lit = false, lastSay = 0;
+const users = new Map();     // id -> {c,last,say:{t,ts}}
+const gifts = [];            // {i,ts}
+const notes = [];            // {t,ts,key}
+const visitors = new Set();
+let joined = 0, entered = false, lit = false, lastSay = 0, boardedUntil = 0;
 users.set(me.id, {c: me.c, last: Date.now()});
 
 /* ===== 중계 (ntfy.sh, 계정 없이 쓰는 무료 공개 중계) ===== */
-function pub(d){ try { fetch(RELAY, {method:'POST', body: JSON.stringify(d), keepalive:true}).catch(()=>{}); } catch {} }
-function handle(m){
+function pub(url, d){ try { fetch(url, {method:'POST', body: JSON.stringify(d), keepalive:true}).catch(()=>{}); } catch {} }
+function addNote(t, ts, key){
+  t = clean(t); if (!t || t === '…') return;
+  if (notes.some(n => n.key === key)) return;
+  notes.push({t, ts, key}); notes.sort((a, b) => a.ts - b.ts); if (notes.length > 200) notes.shift();
+  drawBoard();
+}
+function handle(m, bf){
   if (!m || m.event !== 'message') return;
   let d; try { d = JSON.parse(m.message); } catch { return; }
-  if (!d || typeof d.i !== 'string' || d.i === me.id) return;
+  if (!d || typeof d.i !== 'string') return;
+  visitors.add(d.i);
+  if (d.i === me.id) return;
   const ts = (m.time || 0) * 1000 || Date.now();
   if (d.k === 'bye') { users.delete(d.i); return; }
   const u = users.get(d.i) || {c: 0, last: 0};
   u.c = (d.c | 0) % COLORS.length; if (ts > u.last) u.last = ts;
   users.set(d.i, u);
-  if (d.k === 'say' && typeof d.t === 'string') { u.say = {t: clean(d.t), ts}; }
-  if (d.k === 'gift') { gifts.push({i: d.i, ts}); if (Date.now() - ts < 15000) toast('누군가 따뜻한 커피를 놓고 갔어요 ☕'); }
+  if (d.k === 'say' && typeof d.t === 'string') {
+    u.say = {t: clean(d.t), ts};
+    if (!bf) { addNote(d.t, ts, d.i + '|' + d.t); if (entered) Snd.pop(); }
+  }
+  if (d.k === 'gift') { gifts.push({i: d.i, ts}); if (!bf && Date.now() - ts < 15000) { toast('누군가 따뜻한 커피를 놓고 갔어요 ☕'); Snd.clunk(); } }
 }
-async function backfill(){
+function handleWall(m){
+  if (!m || m.event !== 'message') return;
+  let d; try { d = JSON.parse(m.message); } catch { return; }
+  if (!d || typeof d.i !== 'string') return;
+  visitors.add(d.i);
+  if (d.k === 'say' && typeof d.t === 'string') addNote(d.t, (m.time || 0) * 1000, d.i + '|' + d.t);
+}
+async function poll(url, since, fn){
   try {
-    const r = await fetch(RELAY + '/json?poll=1&since=10m');
-    const t = await r.text();
-    t.split('\n').forEach(l => { if (l.trim()) { try { handle(JSON.parse(l)); } catch {} } });
+    const t = await (await fetch(url + '/json?poll=1&since=' + since)).text();
+    t.split('\n').forEach(l => { if (l.trim()) { try { fn(JSON.parse(l)); } catch {} } });
   } catch {}
 }
 function live(){
-  try {
-    const es = new EventSource(RELAY + '/sse');
-    es.onmessage = e => { try { handle(JSON.parse(e.data)); } catch {} };
-    es.onerror = () => {};
-  } catch {}
+  try { const es = new EventSource(RELAY + '/sse'); es.onmessage = e => { try { handle(JSON.parse(e.data), false); } catch {} }; } catch {}
 }
-function beat(){ users.get(me.id).last = Date.now(); pub({k:'hb', i: me.id, c: me.c}); }
+function beat(){ if (!entered) return; users.get(me.id).last = Date.now(); pub(RELAY, {k:'hb', i: me.id, c: me.c}); }
 
 /* ===== 문장 거르기 ===== */
 const BAD = ['시발','씨발','병신','개새','좆','지랄','섹스','자살','죽어','꺼져','ㅅㅂ','ㅂㅅ','ㅈㄹ'];
@@ -165,6 +234,62 @@ function clean(t){
   for (const b of BAD) if (t.includes(b)) return '…';
   return t;
 }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function ago(ts){ const m = Math.max(0, Math.round((Date.now() - ts) / 60000)); return m < 1 ? '방금' : m < 60 ? m + '분 전' : Math.floor(m / 60) + '시간 전'; }
+
+/* ===== 소리 (WebAudio로 직접 만듦, 파일 없음) ===== */
+const Snd = (() => {
+  let ctx = null, master = null, on = store.get('stop-snd') !== '0', buzzG = null;
+  const noise = s => { const b = ctx.createBuffer(1, ctx.sampleRate * s, ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; };
+  function loop(buf, type, f, g, q){ const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; const fl = ctx.createBiquadFilter(); fl.type = type; fl.frequency.value = f; if (q) fl.Q.value = q; const gn = ctx.createGain(); gn.gain.value = g; s.connect(fl).connect(gn).connect(master); s.start(); return gn; }
+  function burst(dur, type, f0, f1, peak, pan0, pan1){
+    if (!ctx) return; const t = ctx.currentTime, s = ctx.createBufferSource(); s.buffer = noise(dur);
+    const fl = ctx.createBiquadFilter(); fl.type = type; fl.Q.value = 1.1; fl.frequency.setValueAtTime(f0, t); fl.frequency.linearRampToValueAtTime(f1, t + dur * .5); fl.frequency.linearRampToValueAtTime(f0, t + dur);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + dur * .45); g.gain.linearRampToValueAtTime(0, t + dur);
+    let node = s.connect(fl).connect(g);
+    if (ctx.createStereoPanner && pan0 != null) { const p = ctx.createStereoPanner(); p.pan.setValueAtTime(pan0, t); p.pan.linearRampToValueAtTime(pan1, t + dur); node = node.connect(p); }
+    node.connect(master); s.start(t); s.stop(t + dur);
+  }
+  function tone(f, dur, peak, type, at){
+    if (!ctx) return; const t = ctx.currentTime + (at || 0), o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g).connect(master); o.start(t); o.stop(t + dur + .05);
+  }
+  function engine(dur, peak, pan0, pan1){
+    if (!ctx) return; const t = ctx.currentTime, o = ctx.createOscillator(), o2 = ctx.createOscillator(), fl = ctx.createBiquadFilter(), g = ctx.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 42; o2.type = 'sawtooth'; o2.frequency.value = 63; fl.type = 'lowpass'; fl.frequency.value = 240;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + dur * .4); g.gain.linearRampToValueAtTime(peak * .8, t + dur * .6); g.gain.linearRampToValueAtTime(0, t + dur);
+    let node = g; o.connect(fl); o2.connect(fl); fl.connect(g);
+    if (ctx.createStereoPanner && pan0 != null) { const p = ctx.createStereoPanner(); p.pan.setValueAtTime(pan0, t); p.pan.linearRampToValueAtTime(pan1, t + dur); node = g.connect(p); }
+    node.connect(master); o.start(t); o2.start(t); o.stop(t + dur); o2.stop(t + dur);
+    burst(dur, 'lowpass', 160, 260, peak * .9, pan0, pan1);
+  }
+  function scheduleCar(){ setTimeout(() => { const l = Math.random() < .5; burst(3.2, 'bandpass', 300, 850, .22, l ? -.9 : .9, l ? .9 : -.9); scheduleCar(); }, 12000 + Math.random() * 22000); }
+  function flicker(){ setTimeout(() => { const lg = $('lampG'), rf = $('lampRefl'); lg.style.opacity = rf.style.opacity = .35; if (buzzG && ctx) buzzG.gain.setTargetAtTime(.012, ctx.currentTime, .01);
+      setTimeout(() => { lg.style.opacity = 1; rf.style.opacity = .8; if (buzzG && ctx) buzzG.gain.setTargetAtTime(.004, ctx.currentTime, .05); }, 90 + Math.random() * 160); flicker(); }, 7000 + Math.random() * 14000); }
+  return {
+    start(){
+      flicker();
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
+      master = ctx.createGain(); master.gain.value = on ? 1 : 0; master.connect(ctx.destination);
+      const n = noise(3);
+      loop(n, 'highpass', 900, .13);           // 빗소리
+      loop(n, 'lowpass', 420, .07);            // 젖은 길 웅웅
+      const b = ctx.createOscillator(), bf = ctx.createBiquadFilter(); buzzG = ctx.createGain();
+      b.type = 'sawtooth'; b.frequency.value = 120; bf.type = 'lowpass'; bf.frequency.value = 500; buzzG.gain.value = .004;
+      b.connect(bf).connect(buzzG).connect(master); b.start();   // 가로등 지직
+      scheduleCar();
+    },
+    toggle(){ on = !on; store.set('stop-snd', on ? '1' : '0'); if (master) master.gain.setTargetAtTime(on ? 1 : 0, ctx.currentTime, .1); if (on && ctx && ctx.state === 'suspended') ctx.resume(); return on; },
+    get on(){ return on; },
+    pass(){ engine(9, .2, -.9, .9); },
+    arrive(){ engine(6, .26, -.9, 0); setTimeout(() => burst(1.3, 'highpass', 2600, 3200, .18), 5600); },
+    door(){ burst(.8, 'highpass', 2200, 2800, .14); tone(659, .6, .08, 'sine', .5); tone(523, .9, .08, 'sine', .85); },
+    leave(){ engine(10, .26, 0, .9); },
+    pop(){ tone(880, .12, .05, 'sine'); tone(1175, .1, .03, 'sine', .06); },
+    clunk(){ tone(140, .25, .2, 'triangle'); burst(.2, 'bandpass', 900, 1200, .12); }
+  };
+})();
 
 /* ===== 그리기 ===== */
 function avatarSVG(color, sit){
@@ -175,17 +300,23 @@ function avatarSVG(color, sit){
 }
 function active(){
   const now = Date.now(), list = [];
-  users.forEach((u, id) => { if (id === me.id || now - u.last < ACTIVE_MS) list.push([id, u]); });
+  users.forEach((u, id) => { if ((id === me.id && entered) || (id !== me.id && now - u.last < ACTIVE_MS)) list.push([id, u]); });
   list.sort((a, b) => (a[0] === me.id ? -1 : b[0] === me.id ? 1 : a[0] < b[0] ? -1 : 1));
   return list;
+}
+function drawBoard(){
+  const last = notes.slice(-6).reverse();
+  $('board').innerHTML = last.map(n => `<div class="nt">${esc(n.t)}</div>`).join('');
+  $('tN').textContent = notes.length; $('gT').textContent = notes.length;
 }
 let sig = '';
 function render(){
   const list = active(), now = Date.now();
-  $('n').textContent = list.length;
+  $('n').textContent = Math.max(1, list.length); $('gN').textContent = Math.max(1, list.length); $('gV').textContent = Math.max(1, visitors.size);
   const shown = list.slice(0, SEATS.length + STAND.length);
   const s = shown.map(([id]) => id).join(',') + '|' + gifts.filter(g => now - g.ts < GIFT_MS).length;
   const box = $('avs');
+  box.classList.toggle('boarded', now < boardedUntil);
   if (s !== sig) {
     sig = s; box.innerHTML = '';
     shown.forEach(([id, u], k) => {
@@ -207,25 +338,92 @@ function render(){
     else if (!on && b) b.remove();
     else if (on && b && b.textContent !== u.say.t) b.textContent = u.say.t;
   });
-  if (!lit && now - joined > 150000) { lit = true; $('vend').classList.add('lit'); $('vendTip').classList.add('on'); setTimeout(() => $('vendTip').classList.remove('on'), 6000); }
-  const kst = new Date(now + 9 * 3600e3), hm = kst.getUTCHours() * 60 + kst.getUTCMinutes();
-  const hot = hm >= 22 * 60 + 50 && hm <= 23 * 60 + 20, nt = $('notice');
-  nt.classList.toggle('hot', hot);
-  nt.textContent = hot ? '🚌 지금 막차 시간이에요' : '매일 밤 11시, 막차 시간에 가장 많이 모여요';
+  if (entered && !lit && now - joined > 150000) { lit = true; $('vend').classList.add('lit'); $('vendTip').classList.add('on'); setTimeout(() => $('vendTip').classList.remove('on'), 6000); }
+  notice(now);
 }
 
-/* ===== 한마디 ===== */
+/* ===== 막차 시계 (한국 시간 밤 11시) ===== */
+function kstMin(now){ const k = new Date(now + 9 * 3600e3); return k.getUTCHours() * 60 + k.getUTCMinutes(); }
+function notice(now){
+  const hm = kstMin(now), nt = $('notice'), v = Math.max(1, visitors.size);
+  let txt, hot = false;
+  if (now < boardedUntil) { txt = '🚌 오늘 막차가 떠났어요 · 내일 밤 11시에 또 만나요'; hot = true; }
+  else if (hm >= 22 * 60 + 50 && hm < 23 * 60) { const m = 23 * 60 - hm; txt = `🚌 막차가 곧 와요 · ${m}분 남았어요`; hot = true; }
+  else if (hm >= 23 * 60 && hm < 23 * 60 + 5) { txt = '🚌 지금 막차 시간이에요'; hot = true; }
+  else { const m = hm < 23 * 60 ? 23 * 60 - hm : 24 * 60 - hm + 23 * 60; txt = `막차까지 ${Math.floor(m / 60) ? Math.floor(m / 60) + '시간 ' : ''}${m % 60}분 · 오늘 다녀간 사람 ${v}명`; }
+  nt.textContent = txt; nt.classList.toggle('hot', hot);
+}
+
+/* ===== 버스 움직임 ===== */
+let busy = false;
+function move(el, y, x0, x1, ms, ease){
+  return new Promise(res => { const t0 = performance.now();
+    (function f(t){ let p = Math.min(1, (t - t0) / ms); const e = ease === 'out' ? 1 - Math.pow(1 - p, 3) : ease === 'in' ? p * p * p : p;
+      el.setAttribute('transform', `translate(${x0 + (x1 - x0) * e},${y})`); p < 1 ? requestAnimationFrame(f) : res(); })(t0); });
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function passBus(){ if (busy || document.hidden) return; busy = true; Snd.pass(); await move($('bus'), 452, -220, 520, 9000); busy = false; }
+async function lastBus(){
+  while (busy) await wait(500);
+  busy = true; const L = $('last');
+  Snd.arrive(); await move(L, 446, -260, 104, 6000, 'out');
+  await wait(1500); $('door').setAttribute('fill', '#ffe9a8'); Snd.door();
+  const n = active().length;
+  await wait(2500); boardedUntil = Date.now() + (TEST ? 25000 : 5 * 60000); sig = ''; render();
+  await wait(7000); $('door').setAttribute('fill', '#0e2550'); Snd.door();
+  toast(n > 1 ? `오늘 막차에 ${n}명이 함께 탔어요 🌙` : '오늘 막차를 타고 갑니다 🌙');
+  await wait(2000); Snd.leave(); await move(L, 446, 104, 540, 9000, 'in');
+  L.setAttribute('transform', 'translate(-260,446)'); busy = false;
+}
+function scheduleLast(){
+  const now = Date.now(), k = new Date(now + 9 * 3600e3);
+  let target = Date.UTC(k.getUTCFullYear(), k.getUTCMonth(), k.getUTCDate(), 23, 0, 0) - 9 * 3600e3;
+  if (now - target > 20000) target += 86400e3;
+  setTimeout(() => { lastBus(); setTimeout(scheduleLast, 60000); }, Math.max(0, target - now));
+}
+
+/* ===== 비·깊이 ===== */
+(function rain(){
+  const cv = $('rain'), cx = cv.getContext('2d'); let W = 0, H = 0; const drops = [];
+  function size(){ const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0); }
+  size(); addEventListener('resize', size);
+  for (let i = 0; i < 90; i++) drops.push({x: Math.random(), y: Math.random(), v: .6 + Math.random() * .5, l: 8 + Math.random() * 10, a: .15 + Math.random() * .25});
+  let last = performance.now();
+  (function f(t){ const dt = Math.min(50, t - last) / 1000; last = t; cx.clearRect(0, 0, W, H); cx.lineWidth = 1;
+    for (const d of drops) { d.y += d.v * dt * 1.1; d.x -= d.v * dt * .12; if (d.y > 1.02) { d.y = -.05; d.x = Math.random() * 1.1; }
+      const x = d.x * W, y = d.y * H; cx.strokeStyle = `rgba(190,205,255,${d.a})`; cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x - d.l * .14, y + d.l); cx.stroke();
+      if (d.y > .8 && Math.random() < .01) { cx.fillStyle = 'rgba(190,205,255,.35)'; cx.fillRect(x - 2, y + d.l, 4, 1); } }
+    requestAnimationFrame(f); })(last);
+})();
+let tx = 0, ty = 0, cxp = 0, cyp = 0;
+function tilt(x, y){ tx = Math.max(-1, Math.min(1, x)); ty = Math.max(-1, Math.min(1, y)); }
+addEventListener('mousemove', e => tilt(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1));
+function onOrient(e){ if (e.gamma != null) tilt(e.gamma / 30, ((e.beta || 45) - 45) / 30); }
+(function para(){ cxp += (tx - cxp) * .06; cyp += (ty - cyp) * .06;
+  $('far').setAttribute('transform', `translate(${-cxp * 4},${-cyp * 3})`); $('mid').setAttribute('transform', `translate(${-cxp * 9},${-cyp * 4})`);
+  requestAnimationFrame(para); })();
+
+/* ===== 쪽지 ===== */
 $('form').addEventListener('submit', e => {
   e.preventDefault();
-  const t = clean($('msg').value); if (!t) return;
+  const t = clean($('msg').value); if (!t || t === '…') { $('msg').value = ''; return toast('그 말은 붙일 수 없어요'); }
   if (Date.now() - lastSay < 8000) return toast('잠깐 쉬었다 남겨 주세요');
   lastSay = Date.now();
   const u = users.get(me.id); u.say = {t, ts: Date.now()};
-  pub({k:'say', i: me.id, c: me.c, t}); $('msg').value = ''; render();
+  pub(RELAY, {k:'say', i: me.id, c: me.c, t}); pub(WALL, {k:'say', i: me.id, t});
+  addNote(t, Date.now(), me.id + '|' + t); Snd.pop();
+  $('msg').value = ''; render();
 });
+$('board').onclick = () => {
+  const list = notes.slice().reverse().slice(0, 60);
+  $('sheet').innerHTML = `<h2>📝 오늘 밤 정류장 쪽지</h2><p class="sub">다녀간 사람들이 붙여 두고 간 한 줄이에요</p>
+    ${list.length ? '<ul class="notes">' + list.map(n => `<li>${esc(n.t)}<span>${ago(n.ts)}</span></li>`).join('') + '</ul>' : '<p class="sub">아직 쪽지가 없어요. 첫 쪽지를 붙여 주세요.</p>'}
+    <button class="close" id="close">닫기</button>`;
+  $('modal').classList.add('on'); $('close').onclick = () => $('modal').classList.remove('on');
+};
 
 /* ===== 자판기 ===== */
-function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2600); }
+function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2800); }
 function openVend(){
   const sh = $('sheet');
   const shop = SHOP.map(s => s.url
@@ -238,22 +436,41 @@ function openVend(){
   $('modal').classList.add('on');
   $('close').onclick = () => $('modal').classList.remove('on');
   $('coffee').onclick = () => {
-    if (!DONATE_URL) return toast('커피 자판기는 곧 열려요');
-    window.open(DONATE_URL, '_blank', 'noopener');
-    sh.innerHTML = `<h2>☕ 커피 뽑으셨어요?</h2><p class="sub">송금을 마치셨다면 정류장에 커피를 놓아 드릴게요.</p>
+    if (!DONATE_URL && !ACCOUNT) return toast('커피 자판기는 곧 열려요');
+    if (DONATE_URL) window.open(DONATE_URL, '_blank', 'noopener');
+    const acct = DONATE_URL ? '' : `<p class="sub" style="margin:8px 0"><b>${ACCOUNT.bank} ${ACCOUNT.no}</b><br>예금주 ${ACCOUNT.name}</p>
+      <button class="item" id="copy"><span class="em">📋</span><span>계좌번호 복사하기<small>금액은 마음 가는 만큼이면 충분해요</small></span></button>`;
+    sh.innerHTML = `<h2>☕ 커피 뽑으셨어요?</h2><p class="sub">송금을 마치셨다면 정류장에 커피를 놓아 드릴게요.</p>${acct}
       <button class="item main" id="done"><span class="em">🙌</span><span>네, 커피를 놓을게요</span></button><button class="close" id="close2">아직이에요</button>`;
+    if ($('copy')) $('copy').onclick = () => { try { navigator.clipboard.writeText(ACCOUNT.no); toast('계좌번호를 복사했어요'); } catch { toast('번호를 길게 눌러 복사해 주세요'); } };
     $('close2').onclick = () => $('modal').classList.remove('on');
-    $('done').onclick = () => { gifts.push({i: me.id, ts: Date.now()}); pub({k:'gift', i: me.id}); $('modal').classList.remove('on'); toast('따뜻한 커피를 놓았어요 ☕'); render(); };
+    $('done').onclick = () => { gifts.push({i: me.id, ts: Date.now()}); pub(RELAY, {k:'gift', i: me.id}); $('modal').classList.remove('on'); toast('따뜻한 커피를 놓았어요 ☕'); Snd.clunk(); render(); };
   };
 }
 $('vend').onclick = openVend;
 $('modal').addEventListener('click', e => { if (e.target === $('modal')) $('modal').classList.remove('on'); });
+$('snd').textContent = Snd.on ? '🔊' : '🔇';
+$('snd').onclick = () => { $('snd').textContent = Snd.toggle() ? '🔊' : '🔇'; };
+
+/* ===== 들어가기 ===== */
+$('enter').onclick = async () => {
+  if (entered) return; entered = true; joined = Date.now();
+  Snd.start();
+  try { if (window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) { if (await DeviceOrientationEvent.requestPermission() === 'granted') addEventListener('deviceorientation', onOrient); } else addEventListener('deviceorientation', onOrient); } catch {}
+  $('gate').classList.add('off');
+  visitors.add(me.id);
+  try { if (!sessionStorage.getItem('stop-in')) { sessionStorage.setItem('stop-in', '1'); pub(WALL, {k:'in', i: me.id}); } } catch { pub(WALL, {k:'in', i: me.id}); }
+  beat(); sig = ''; render();
+  setTimeout(() => { passBus(); setInterval(passBus, 80000); }, 15000);
+  if (TEST) setTimeout(lastBus, 8000);
+};
 
 /* ===== 시작 ===== */
-backfill().then(() => { beat(); live(); render(); });
+Promise.all([poll(RELAY, '10m', m => handle(m, true)), poll(WALL, '12h', handleWall)]).then(() => { live(); drawBoard(); render(); });
+scheduleLast();
 setInterval(beat, HB_MS);
 setInterval(render, 1000);
-addEventListener('pagehide', () => { try { navigator.sendBeacon(RELAY, JSON.stringify({k:'bye', i: me.id})); } catch {} });
+addEventListener('pagehide', () => { if (entered) try { navigator.sendBeacon(RELAY, JSON.stringify({k:'bye', i: me.id})); } catch {} });
 render();
 </script>
 </body>
