@@ -292,8 +292,8 @@ const Snd = (() => {
       try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
       master = ctx.createGain(); master.gain.value = on ? 1 : 0; master.connect(ctx.destination);
       const n = noise(3);
-      loop(n, 'highpass', 900, .13);           // 빗소리
-      loop(n, 'lowpass', 420, .07);            // 젖은 길 웅웅
+      loop(n, 'highpass', 1400, .045);         // 빗소리 (11/7 대표님: 너무 큼 → 약 1/3)
+      loop(n, 'lowpass', 380, .035);           // 젖은 길 웅웅
       const b = ctx.createOscillator(), bf = ctx.createBiquadFilter(); buzzG = ctx.createGain();
       b.type = 'sawtooth'; b.frequency.value = 120; bf.type = 'lowpass'; bf.frequency.value = 500; buzzG.gain.value = .004;
       b.connect(bf).connect(buzzG).connect(master); b.start();   // 가로등 지직
