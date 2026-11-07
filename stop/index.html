@@ -27,6 +27,13 @@ body{display:flex;flex-direction:column;align-items:center;overflow:hidden}
 .av svg{width:100%;display:block;overflow:visible}
 .av .me{position:absolute;left:50%;top:-20px;transform:translateX(-50%);font-size:10px;color:var(--gold);white-space:nowrap}
 #avs.boarded .av,#avs.boarded .cup{opacity:0}
+.av.other{pointer-events:auto;cursor:pointer}
+.act{position:absolute;left:50%;bottom:104%;transform:translateX(-50%);font-size:20px;line-height:1;z-index:5;animation:rise 4s ease-out forwards;pointer-events:none;white-space:nowrap}
+@keyframes rise{0%{opacity:0;transform:translate(-50%,6px) scale(.7)}12%{opacity:1;transform:translate(-50%,0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-10px)}}
+.nm{position:absolute;left:50%;top:102%;transform:translateX(-50%);font-size:8.5px;color:#cfd8ff;white-space:nowrap;opacity:.8;pointer-events:none}
+.gate .myname{margin-top:6px;font-size:15px;color:var(--ink)}
+.gate .myname b{color:var(--gold);font-size:17px}
+.gate .gift{background:rgba(255,210,122,.14);border:1px solid rgba(255,210,122,.35);border-radius:14px;padding:10px 14px;color:var(--ink);font-size:14px}
 .bub{position:absolute;left:50%;bottom:112%;transform:translateX(-50%);background:#fff;color:#1c2038;font-size:12px;line-height:1.35;padding:6px 9px;border-radius:12px;max-width:130px;width:max-content;text-align:center;z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.35);word-break:keep-all;animation:pop .25s ease-out}
 .bub:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:#fff;border-bottom:0}
 @keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.85)}to{opacity:1;transform:translateX(-50%) scale(1)}}
@@ -78,9 +85,11 @@ body{display:flex;flex-direction:column;align-items:center;overflow:hidden}
 </head>
 <body>
 <div class="gate" id="gate">
+  <div class="gift" id="gGift" hidden></div>
   <div class="big">🚌</div>
   <h2>심야 버스 정류장</h2>
-  <p>지금 <b id="gN">1</b>명이 막차를 기다리고 있어요<br>오늘 밤 다녀간 사람 <b id="gV">0</b>명 · 남긴 쪽지 <b id="gT">0</b>장</p>
+  <p>지금 <b id="gN">1</b>명이 막차를 기다리고 있어요 · 벤치 <b id="gS">4</b>자리 남음<br>오늘 밤 다녀간 사람 <b id="gV">0</b>명 · 남긴 쪽지 <b id="gT">0</b>장</p>
+  <div class="myname">오늘 밤 당신은 <b id="gMe"></b></div>
   <button id="enter">정류장으로 들어가기</button>
   <small>🎧 소리를 켜면 비 오는 밤이 들려요</small>
 </div>
@@ -149,7 +158,7 @@ body{display:flex;flex-direction:column;align-items:center;overflow:hidden}
 </div>
 
 <form class="bar" id="form"><input id="msg" maxlength="20" placeholder="쪽지 한 줄 남기기 (20자)" autocomplete="off"><button id="send" type="submit">남기기</button></form>
-<div class="foot">익명이에요 · 남긴 쪽지는 오늘 밤 동안 정류장에 붙어 있어요 · <a href="https://www.instagram.com/hanmadi.send/" target="_blank" rel="noopener">@hanmadi.send</a></div>
+<div class="foot">말은 못 걸어요 · 사람을 누르면 조용히 인사할 수 있어요 · 쪽지는 오늘 밤 동안 붙어 있어요 ·<a href="https://www.instagram.com/hanmadi.send/" target="_blank" rel="noopener">@hanmadi.send</a></div>
 
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
@@ -160,8 +169,11 @@ const TEST = /test/.test(location.hash);           // #test 이면 시험용 방
 const TOPIC = 'hanmadi-busstop-v1-k3q9x7' + (TEST ? '-test' : '');
 const RELAY = 'https://ntfy.sh/' + TOPIC;          // 실시간 (하트비트·말풍선)
 const WALL  = 'https://ntfy.sh/' + TOPIC + '-wall'; // 쪽지·방문 기록 (12시간 보관)
-const ACCOUNT = null;            // {bank, no, name} — 공개 여부 대표님 결정 전까지 비움
-const DONATE_URL = '';           // 토스 송금 링크 (toss.me/아이디). 비어 있으면 "곧 열려요"
+// 후원(버스비 보태기)은 사람이 모인 뒤에 연다 — 지금은 넣지 않음
+const ADJ  = ['젖은','졸린','느린','조용한','따뜻한','마지막','늦은','작은','반짝이는','지친','설레는','수줍은','멍한','포근한','동그란','길 잃은'];
+const NOUN = ['우산','가로등','손님','운동화','이어폰','캔커피','목도리','빗방울','버스표','고양이','별','편의점','붕어빵','양말','달','택시'];
+const nameOf = n => (Array.isArray(n) && ADJ[n[0]] && NOUN[n[1]]) ? ADJ[n[0]] + ' ' + NOUN[n[1]] : '이름 모를 손님';
+const ACTS = { bow: {em:'🙇', to:'고개를 꾸벅 숙여 인사했어요', me:'꾸벅 인사'}, umb: {em:'☂️', to:'우산을 씌워 줬어요', me:'우산 씌워 주기'}, cof: {em:'☕', to:'캔커피를 건넸어요', me:'캔커피 건네기'} };
 const SHOP = [                   // 쿠팡 파트너스 링크
   {em:'🔥', name:'핫팩·손난로', sub:'추운 밤 정류장 필수템', url:'https://link.coupang.com/a/isijeXPrYy'},
   {em:'😴', name:'목베개', sub:'졸다 고개 꺾이지 않게', url:'https://link.coupang.com/a/isikCrC8hU'},
@@ -175,20 +187,23 @@ const $ = id => document.getElementById(id);
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
 
 /* ===== 상태 ===== */
-const me = {id: Math.random().toString(36).slice(2, 8), c: Math.floor(Math.random() * COLORS.length)};
+const me = {id: Math.random().toString(36).slice(2, 8), c: Math.floor(Math.random() * COLORS.length), n: null};
+try { const s = JSON.parse(store.get('stop-name')); if (nameOf(s) !== '이름 모를 손님') me.n = s; } catch {}
+if (!me.n) { me.n = [Math.floor(Math.random() * ADJ.length), Math.floor(Math.random() * NOUN.length)]; store.set('stop-name', JSON.stringify(me.n)); }
+let lastAct = 0;
 const users = new Map();     // id -> {c,last,say:{t,ts}}
 const gifts = [];            // {i,ts}
 const notes = [];            // {t,ts,key}
 const visitors = new Set();
 let joined = 0, entered = false, lit = false, lastSay = 0, boardedUntil = 0;
-users.set(me.id, {c: me.c, last: Date.now()});
+users.set(me.id, {c: me.c, n: me.n, last: Date.now()});
 
 /* ===== 중계 (ntfy.sh, 계정 없이 쓰는 무료 공개 중계) ===== */
 function pub(url, d){ try { fetch(url, {method:'POST', body: JSON.stringify(d), keepalive:true}).catch(()=>{}); } catch {} }
-function addNote(t, ts, key){
+function addNote(t, ts, key, nm){
   t = clean(t); if (!t || t === '…') return;
   if (notes.some(n => n.key === key)) return;
-  notes.push({t, ts, key}); notes.sort((a, b) => a.ts - b.ts); if (notes.length > 200) notes.shift();
+  notes.push({t, ts, key, by: nameOf(nm)}); notes.sort((a, b) => a.ts - b.ts); if (notes.length > 200) notes.shift();
   drawBoard();
 }
 function handle(m, bf){
@@ -201,10 +216,14 @@ function handle(m, bf){
   if (d.k === 'bye') { users.delete(d.i); return; }
   const u = users.get(d.i) || {c: 0, last: 0};
   u.c = (d.c | 0) % COLORS.length; if (ts > u.last) u.last = ts;
+  if (Array.isArray(d.n)) u.n = d.n;
   users.set(d.i, u);
   if (d.k === 'say' && typeof d.t === 'string') {
-    u.say = {t: clean(d.t), ts};
-    if (!bf) { addNote(d.t, ts, d.i + '|' + d.t); if (entered) Snd.pop(); }
+    if (!bf) { addNote(d.t, ts, d.i + '|' + d.t, d.n); if (entered) Snd.pop(); }
+  }
+  if (d.k === 'act' && ACTS[d.a] && typeof d.to === 'string' && !bf && Date.now() - ts < 15000) {
+    const tu = users.get(d.to); if (tu) tu.act = {a: d.a, ts};
+    if (d.to === me.id && entered) { toast(`${nameOf(d.n)}님이 ${ACTS[d.a].to} ${ACTS[d.a].em}`); d.a === 'cof' ? Snd.clunk() : Snd.pop(); }
   }
   if (d.k === 'gift') { gifts.push({i: d.i, ts}); if (!bf && Date.now() - ts < 15000) { toast('누군가 따뜻한 커피를 놓고 갔어요 ☕'); Snd.clunk(); } }
 }
@@ -213,7 +232,7 @@ function handleWall(m){
   let d; try { d = JSON.parse(m.message); } catch { return; }
   if (!d || typeof d.i !== 'string') return;
   visitors.add(d.i);
-  if (d.k === 'say' && typeof d.t === 'string') addNote(d.t, (m.time || 0) * 1000, d.i + '|' + d.t);
+  if (d.k === 'say' && typeof d.t === 'string') addNote(d.t, (m.time || 0) * 1000, d.i + '|' + d.t, d.n);
 }
 async function poll(url, since, fn){
   try {
@@ -224,7 +243,7 @@ async function poll(url, since, fn){
 function live(){
   try { const es = new EventSource(RELAY + '/sse'); es.onmessage = e => { try { handle(JSON.parse(e.data), false); } catch {} }; } catch {}
 }
-function beat(){ if (!entered) return; users.get(me.id).last = Date.now(); pub(RELAY, {k:'hb', i: me.id, c: me.c}); }
+function beat(){ if (!entered) return; users.get(me.id).last = Date.now(); pub(RELAY, {k:'hb', i: me.id, c: me.c, n: me.n}); }
 
 /* ===== 문장 거르기 ===== */
 const BAD = ['시발','씨발','병신','개새','좆','지랄','섹스','자살','죽어','꺼져','ㅅㅂ','ㅂㅅ','ㅈㄹ'];
@@ -313,6 +332,7 @@ let sig = '';
 function render(){
   const list = active(), now = Date.now();
   $('n').textContent = Math.max(1, list.length); $('gN').textContent = Math.max(1, list.length); $('gV').textContent = Math.max(1, visitors.size);
+  $('gS').textContent = Math.max(0, SEATS.length - list.length);
   const shown = list.slice(0, SEATS.length + STAND.length);
   const s = shown.map(([id]) => id).join(',') + '|' + gifts.filter(g => now - g.ts < GIFT_MS).length;
   const box = $('avs');
@@ -321,9 +341,10 @@ function render(){
     sig = s; box.innerHTML = '';
     shown.forEach(([id, u], k) => {
       const sit = k < SEATS.length, p = sit ? SEATS[k] : STAND[k - SEATS.length];
-      const el = document.createElement('div'); el.className = 'av'; el.dataset.id = id;
+      const el = document.createElement('div'); el.className = 'av' + (id === me.id ? '' : ' other'); el.dataset.id = id;
       el.style.left = (p[0] / 360 * 100) + '%'; el.style.top = (p[1] / 560 * 100) + '%';
-      el.innerHTML = avatarSVG(COLORS[u.c], sit) + (id === me.id ? '<span class="me">나</span>' : '');
+      el.innerHTML = avatarSVG(COLORS[u.c], sit) + (id === me.id ? `<span class="me">나 · ${esc(nameOf(me.n))}</span>` : '');
+      if (id !== me.id) el.onclick = () => openAct(id);
       box.appendChild(el);
     });
     gifts.filter(g => now - g.ts < GIFT_MS).slice(-4).forEach((g, k) => {
@@ -332,11 +353,10 @@ function render(){
     });
   }
   box.querySelectorAll('.av').forEach(el => {
-    const u = users.get(el.dataset.id); const b = el.querySelector('.bub');
-    const on = u && u.say && now - u.say.ts < SAY_MS;
-    if (on && !b) { const d = document.createElement('div'); d.className = 'bub'; d.textContent = u.say.t; el.appendChild(d); }
+    const u = users.get(el.dataset.id); const b = el.querySelector('.act');
+    const on = u && u.act && now - u.act.ts < 4000;
+    if (on && (!b || b.dataset.ts != u.act.ts)) { if (b) b.remove(); const d = document.createElement('div'); d.className = 'act'; d.dataset.ts = u.act.ts; d.textContent = ACTS[u.act.a].em; el.appendChild(d); }
     else if (!on && b) b.remove();
-    else if (on && b && b.textContent !== u.say.t) b.textContent = u.say.t;
   });
   if (entered && !lit && now - joined > 150000) { lit = true; $('vend').classList.add('lit'); $('vendTip').classList.add('on'); setTimeout(() => $('vendTip').classList.remove('on'), 6000); }
   notice(now);
@@ -351,6 +371,7 @@ function notice(now){
   else if (hm >= 22 * 60 + 50 && hm < 23 * 60) { const m = 23 * 60 - hm; txt = `🚌 막차가 곧 와요 · ${m}분 남았어요`; hot = true; }
   else if (hm >= 23 * 60 && hm < 23 * 60 + 5) { txt = '🚌 지금 막차 시간이에요'; hot = true; }
   else { const m = hm < 23 * 60 ? 23 * 60 - hm : 24 * 60 - hm + 23 * 60; txt = `막차까지 ${Math.floor(m / 60) ? Math.floor(m / 60) + '시간 ' : ''}${m % 60}분 · 오늘 다녀간 사람 ${v}명`; }
+  if (now >= boardedUntil && active().length >= SEATS.length) txt += ' · 🪑 벤치 만석';
   nt.textContent = txt; nt.classList.toggle('hot', hot);
 }
 
@@ -409,15 +430,14 @@ $('form').addEventListener('submit', e => {
   const t = clean($('msg').value); if (!t || t === '…') { $('msg').value = ''; return toast('그 말은 붙일 수 없어요'); }
   if (Date.now() - lastSay < 8000) return toast('잠깐 쉬었다 남겨 주세요');
   lastSay = Date.now();
-  const u = users.get(me.id); u.say = {t, ts: Date.now()};
-  pub(RELAY, {k:'say', i: me.id, c: me.c, t}); pub(WALL, {k:'say', i: me.id, t});
-  addNote(t, Date.now(), me.id + '|' + t); Snd.pop();
+  pub(RELAY, {k:'say', i: me.id, c: me.c, n: me.n, t}); pub(WALL, {k:'say', i: me.id, n: me.n, t});
+  addNote(t, Date.now(), me.id + '|' + t, me.n); Snd.pop(); toast('정류장 유리에 쪽지를 붙였어요 📝');
   $('msg').value = ''; render();
 });
 $('board').onclick = () => {
   const list = notes.slice().reverse().slice(0, 60);
   $('sheet').innerHTML = `<h2>📝 오늘 밤 정류장 쪽지</h2><p class="sub">다녀간 사람들이 붙여 두고 간 한 줄이에요</p>
-    ${list.length ? '<ul class="notes">' + list.map(n => `<li>${esc(n.t)}<span>${ago(n.ts)}</span></li>`).join('') + '</ul>' : '<p class="sub">아직 쪽지가 없어요. 첫 쪽지를 붙여 주세요.</p>'}
+    ${list.length ? '<ul class="notes">' + list.map(n => `<li><div>${esc(n.t)}<br><span>— ${esc(n.by)}</span></div><span>${ago(n.ts)}</span></li>`).join('') + '</ul>' : '<p class="sub">아직 쪽지가 없어요. 첫 쪽지를 붙여 주세요.</p>'}
     <button class="close" id="close">닫기</button>`;
   $('modal').classList.add('on'); $('close').onclick = () => $('modal').classList.remove('on');
 };
@@ -429,23 +449,38 @@ function openVend(){
   const shop = SHOP.map(s => s.url
     ? `<a class="item" href="${s.url}" target="_blank" rel="noopener sponsored"><span class="em">${s.em}</span><span>${s.name}<small>${s.sub}</small></span></a>`
     : '').join('');
-  sh.innerHTML = `<h2>🥫 자판기</h2><p class="sub">따뜻한 걸로 한 잔 뽑아 가세요</p>
-    <button class="item main" id="coffee"><span class="em">☕</span><span>따뜻한 캔커피 뽑아 주기<small>정류장에 앉은 모두에게 커피가 놓여요</small></span></button>
+  sh.innerHTML = `<h2>🥫 자판기</h2><p class="sub">따뜻한 캔커피 한 잔, 누구에게 건넬까요?</p>
+    <button class="item main" id="cBench"><span class="em">☕</span><span>정류장 벤치에 놓기<small>지금 기다리는 모두가 볼 수 있어요</small></span></button>
+    <button class="item" id="cFriend"><span class="em">💌</span><span>친구에게 건네기<small>링크로 보내면 친구가 정류장에서 받아요</small></span></button>
     ${shop ? '<p class="sub" style="margin:12px 0 8px">기다리는 밤에 쓸 만한 것</p>' + shop + '<p class="ad">이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>' : ''}
     <button class="close" id="close">닫기</button>`;
   $('modal').classList.add('on');
   $('close').onclick = () => $('modal').classList.remove('on');
-  $('coffee').onclick = () => {
-    if (!DONATE_URL && !ACCOUNT) return toast('커피 자판기는 곧 열려요');
-    if (DONATE_URL) window.open(DONATE_URL, '_blank', 'noopener');
-    const acct = DONATE_URL ? '' : `<p class="sub" style="margin:8px 0"><b>${ACCOUNT.bank} ${ACCOUNT.no}</b><br>예금주 ${ACCOUNT.name}</p>
-      <button class="item" id="copy"><span class="em">📋</span><span>계좌번호 복사하기<small>금액은 마음 가는 만큼이면 충분해요</small></span></button>`;
-    sh.innerHTML = `<h2>☕ 커피 뽑으셨어요?</h2><p class="sub">송금을 마치셨다면 정류장에 커피를 놓아 드릴게요.</p>${acct}
-      <button class="item main" id="done"><span class="em">🙌</span><span>네, 커피를 놓을게요</span></button><button class="close" id="close2">아직이에요</button>`;
-    if ($('copy')) $('copy').onclick = () => { try { navigator.clipboard.writeText(ACCOUNT.no); toast('계좌번호를 복사했어요'); } catch { toast('번호를 길게 눌러 복사해 주세요'); } };
-    $('close2').onclick = () => $('modal').classList.remove('on');
-    $('done').onclick = () => { gifts.push({i: me.id, ts: Date.now()}); pub(RELAY, {k:'gift', i: me.id}); $('modal').classList.remove('on'); toast('따뜻한 커피를 놓았어요 ☕'); Snd.clunk(); render(); };
-  };
+  $('cBench').onclick = () => { gifts.push({i: me.id, ts: Date.now()}); pub(RELAY, {k:'gift', i: me.id, n: me.n}); $('modal').classList.remove('on'); toast('벤치에 따뜻한 커피를 놓았어요 ☕'); Snd.clunk(); render(); };
+  $('cFriend').onclick = () => { $('modal').classList.remove('on'); shareCoffee(); };
+}
+async function shareCoffee(){
+  const url = location.origin + location.pathname + '#c=' + me.n.join('.');
+  const text = `☕ ${nameOf(me.n)}님이 심야 버스 정류장에서 캔커피를 건넸어요. 막차 오기 전에 받으러 와요`;
+  try { if (navigator.share) { await navigator.share({title: '심야 버스 정류장', text, url}); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text + '\n' + url); toast('커피 링크를 복사했어요. 친구에게 붙여 보내 주세요'); }
+  catch { prompt('이 링크를 복사해서 보내 주세요', url); }
+}
+/* ===== 조용한 인사 (말은 못 걸어요) ===== */
+function openAct(id){
+  const u = users.get(id); if (!u) return;
+  $('sheet').innerHTML = `<h2>${esc(nameOf(u.n))}</h2><p class="sub">말은 걸 수 없어요. 조용히 마음만 전해요</p>
+    ${Object.entries(ACTS).map(([k, a]) => `<button class="item" data-a="${k}"><span class="em">${a.em}</span><span>${a.me}</span></button>`).join('')}
+    <button class="close" id="close">닫기</button>`;
+  $('modal').classList.add('on'); $('close').onclick = () => $('modal').classList.remove('on');
+  $('sheet').querySelectorAll('[data-a]').forEach(b => b.onclick = () => {
+    $('modal').classList.remove('on');
+    if (Date.now() - lastAct < 3000) return toast('잠깐 쉬었다 해 주세요');
+    lastAct = Date.now(); const a = b.dataset.a;
+    pub(RELAY, {k:'act', i: me.id, c: me.c, n: me.n, to: id, a});
+    u.act = {a, ts: Date.now()}; render(); a === 'cof' ? Snd.clunk() : Snd.pop();
+    toast(`${nameOf(u.n)}님에게 ${ACTS[a].em} 조용히 마음을 전했어요`);
+  });
 }
 $('vend').onclick = openVend;
 $('modal').addEventListener('click', e => { if (e.target === $('modal')) $('modal').classList.remove('on'); });
@@ -466,6 +501,10 @@ $('enter').onclick = async () => {
 };
 
 /* ===== 시작 ===== */
+$('gMe').textContent = nameOf(me.n);
+(() => { const m = location.hash.match(/c=(\d+)\.(\d+)/); if (!m) return;
+  const g = $('gGift'); g.hidden = false; g.textContent = `☕ ${nameOf([+m[1], +m[2]])}님이 캔커피를 건넸어요`;
+  $('enter').textContent = '커피 받으러 들어가기'; $('enter').addEventListener('click', () => setTimeout(() => { gifts.push({i: 'gift', ts: Date.now()}); render(); toast(`${nameOf([+m[1], +m[2]])}님의 커피를 받았어요 ☕`); }, 1200)); })();
 Promise.all([poll(RELAY, '10m', m => handle(m, true)), poll(WALL, '12h', handleWall)]).then(() => { live(); drawBoard(); render(); });
 scheduleLast();
 setInterval(beat, HB_MS);
